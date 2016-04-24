@@ -19,6 +19,7 @@ cabal-version:       >=1.10
 library
   exposed-modules:
     Graphics.D3D11Binding
+    Graphics.D3D11Binding.Enums
   -- other-modules:       
   other-extensions: ForeignFunctionInterface, CPP   
   build-depends:       
@@ -32,7 +33,9 @@ library
     dxgi
     dxguid
   includes:
-    D3DX11.h
+    DXGI.h
+    D3D11.h
+    D3DCompiler.h
   c-sources:
 
 executable HelloWorld
