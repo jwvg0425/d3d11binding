@@ -60,6 +60,7 @@ instance Enum D3DFeatureLevel where
   toEnum 0xa000 = D3DFeatureLevel10_0
   toEnum 0xa100 = D3DFeatureLevel10_1
   toEnum 0xb000 = D3DFeatureLevel11_0
+  toEnum unmatched = error ("D3DFeatureLevel.toEnum: cannot match " ++ show unmatched)
   
 instance Storable D3DFeatureLevel where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
@@ -107,6 +108,7 @@ data DxgiFormat = DxgiFormatUnknown
 instance Enum DxgiFormat where
   fromEnum DxgiFormatUnknown = 0
   toEnum 0 = DxgiFormatUnknown
+  toEnum unmatched = error ("DxgiFormat.toEnum: cannot match " ++ show unmatched)
 
 instance Storable DxgiFormat where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
@@ -135,6 +137,7 @@ instance Enum DxgiModeScanlineOrder where
   toEnum 1 = DxgiModeScanlineOrderProgressive
   toEnum 2 = DxgiModeScanlineOrderUpperFieldFirst
   toEnum 3 = DxgiModeScanlineOrderLowerFieldFirst
+  toEnum unmatched = error ("DxgiModeScanlineOrder.toEnum: cannot match " ++ show unmatched)
   
 instance Storable DxgiModeScanlineOrder where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
@@ -160,6 +163,7 @@ instance Enum DxgiModeScaling where
   toEnum 0 = DxgiModeScalingUnspecified
   toEnum 1 = DxgiModeScalingCentered
   toEnum 2 = DxgiModeScalingStretched
+  toEnum unmatched = error ("DxgiModeScaling.toEnum: cannot match " ++ show unmatched)
   
 instance Storable DxgiModeScaling where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
@@ -182,6 +186,7 @@ instance Enum DxgiSwapEffect where
   fromEnum DxgiSwapEffectSequential = 1
   toEnum 0 = DxgiSwapEffectDiscard
   toEnum 1 = DxgiSwapEffectSequential
+  toEnum unmatched = error ("DxgiSwapEffect.toEnum: cannot match " ++ show unmatched)
   
 instance Storable DxgiSwapEffect where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
@@ -194,3 +199,38 @@ instance CStorable DxgiSwapEffect where
   cAlignment = alignment
   cPeek = peek
   cPoke = poke
+  
+data D3D11CreateDeviceFlag = D3D11CreateDeviceSinglethreaded
+                           | D3D11CreateDeviceDebug
+                           | D3D11CreateDeviceSwitchToRef
+                           | D3D11CreateDevicePreventInternalThreadingOptimizations
+                           | D3D11CreateDeviceBGRASupport
+                           deriving (Eq, Show)
+                           
+instance Enum D3D11CreateDeviceFlag where
+  fromEnum D3D11CreateDeviceSinglethreaded = 0x1
+  fromEnum D3D11CreateDeviceDebug = 0x2
+  fromEnum D3D11CreateDeviceSwitchToRef = 0x4
+  fromEnum D3D11CreateDevicePreventInternalThreadingOptimizations = 0x8
+  fromEnum D3D11CreateDeviceBGRASupport = 0x20
+  toEnum 0x1 = D3D11CreateDeviceSinglethreaded
+  toEnum 0x2 = D3D11CreateDeviceDebug
+  toEnum 0x4 = D3D11CreateDeviceSwitchToRef
+  toEnum 0x8 = D3D11CreateDevicePreventInternalThreadingOptimizations
+  toEnum 0x20 = D3D11CreateDeviceBGRASupport
+  toEnum unmatched = error ("D3D11CreateDeviceFlag.toEnum: cannot match " ++ show unmatched)
+  
+instance Storable D3D11CreateDeviceFlag where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff ptr 0
+  poke ptr = pokeByteOff ptr 0
+  
+instance CStorable D3D11CreateDeviceFlag where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
+
+createDeviceFlag :: [D3D11CreateDeviceFlag] -> Int32
+createDeviceFlag = sum . map (fromIntegral . fromEnum)
