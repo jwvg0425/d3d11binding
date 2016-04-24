@@ -13,7 +13,7 @@ main = do
   hWnd <- createDefaultWindow 600 600 wndProc
   messagePump hWnd
 
-wndProc hwnd wmsg wParam lParam = defWindowProc (Just hwnd) (wmsg) (wParam) (lParam)
+wndProc hwnd wmsg wParam lParam = defWindowProc (Just hwnd) wmsg wParam lParam
 
 createDefaultWindow :: Int -> Int -> WindowClosure -> IO HWND
 createDefaultWindow width height wndProc = do
@@ -48,7 +48,7 @@ createDefaultWindow width height wndProc = do
 messagePump :: HWND -> IO ()
 messagePump hwnd = Graphics.Win32.allocaMessage $ \ msg ->
   let pump = do
-        getMessage msg (Just hwnd) `catch` \ (_::SomeException) -> exitWith ExitSuccess
+        getMessage msg (Just hwnd) `catch` \ (_::SomeException) -> exitSuccess
         translateMessage msg
         dispatchMessage msg
         pump

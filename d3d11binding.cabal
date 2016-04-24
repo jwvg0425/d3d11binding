@@ -20,11 +20,16 @@ library
   exposed-modules:
     Graphics.D3D11Binding
   -- other-modules:       
-  -- other-extensions:    
+  other-extensions: ForeignFunctionInterface, CPP   
   build-depends:       
     base >=4.8 && < 5
   hs-source-dirs:      src
   default-language:    Haskell2010
+  extra-libraries: 
+  extra-libraries:
+  include-dirs:
+  includes:
+  c-sources:
 
 executable HelloWorld
   main-is: HelloWorld.hs
