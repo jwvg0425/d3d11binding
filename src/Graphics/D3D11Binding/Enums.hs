@@ -23,4 +23,24 @@ instance Enum D3DDriverType where
   toEnum 5 = D3DDriverTypeWarp
   toEnum unmatched = error ("D3DDriverType.toEnum: cannot match " ++ show unmatched)
 
-                  
+data D3DFeatureLevel = D3DFeatureLevel9_1
+                     | D3DFeatureLevel9_2
+                     | D3DFeatureLevel9_3
+                     | D3DFeatureLevel10_0
+                     | D3DFeatureLevel10_1
+                     | D3DFeatureLevel11_0
+                     deriving (Eq, Show)
+                     
+instance Enum D3DFeatureLevel where
+  fromEnum D3DFeatureLevel9_1 = 0x9100
+  fromEnum D3DFeatureLevel9_2 = 0x9200
+  fromEnum D3DFeatureLevel9_3 = 0x9300
+  fromEnum D3DFeatureLevel10_0 = 0xa000
+  fromEnum D3DFeatureLevel10_1 = 0xa100
+  fromEnum D3DFeatureLevel11_0 = 0xb000
+  toEnum 0x9100 = D3DFeatureLevel9_1
+  toEnum 0x9200 = D3DFeatureLevel9_2
+  toEnum 0x9300 = D3DFeatureLevel9_3
+  toEnum 0xa000 = D3DFeatureLevel10_0
+  toEnum 0xa100 = D3DFeatureLevel10_1
+  toEnum 0xb000 = D3DFeatureLevel11_0
