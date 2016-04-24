@@ -8,6 +8,9 @@ import Control.Monad
 import Graphics.Win32
 import System.Win32.DLL (getModuleHandle)
 
+import Graphics.D3D11Binding.Enums
+import Graphics.D3D11Binding.Types
+
 main :: IO ()
 main = do
   hWnd <- createDefaultWindow 600 600 wndProc
