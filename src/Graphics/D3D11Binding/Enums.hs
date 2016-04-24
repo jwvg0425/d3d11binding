@@ -1,5 +1,9 @@
 module Graphics.D3D11Binding.Enums where
-  
+
+import Data.Int
+import Foreign.Storable
+import Foreign.CStorable
+
 data D3DDriverType = D3DDriverTypeUnknown
                    | D3DDriverTypeHardware
                    | D3DDriverTypeReference
@@ -23,6 +27,18 @@ instance Enum D3DDriverType where
   toEnum 5 = D3DDriverTypeWarp
   toEnum unmatched = error ("D3DDriverType.toEnum: cannot match " ++ show unmatched)
 
+instance Storable D3DDriverType where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff ptr 0
+  poke ptr = pokeByteOff ptr 0
+  
+instance CStorable D3DDriverType where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
+
 data D3DFeatureLevel = D3DFeatureLevel9_1
                      | D3DFeatureLevel9_2
                      | D3DFeatureLevel9_3
@@ -44,6 +60,18 @@ instance Enum D3DFeatureLevel where
   toEnum 0xa000 = D3DFeatureLevel10_0
   toEnum 0xa100 = D3DFeatureLevel10_1
   toEnum 0xb000 = D3DFeatureLevel11_0
+  
+instance Storable D3DFeatureLevel where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff ptr 0
+  poke ptr = pokeByteOff ptr 0
+  
+instance CStorable D3DFeatureLevel where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
   
 data DxgiFormat = DxgiFormatUnknown
                 | DxgiFormatR32G32B32A32Typeless
@@ -76,6 +104,22 @@ data DxgiFormat = DxgiFormatUnknown
                 | DxgiFormatR8G8B8A8Unorm
                 deriving (Eq, Show)
 
+instance Enum DxgiFormat where
+  fromEnum DxgiFormatUnknown = 0
+  toEnum 0 = DxgiFormatUnknown
+
+instance Storable DxgiFormat where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff ptr 0
+  poke ptr = pokeByteOff ptr 0
+
+instance CStorable DxgiFormat where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
+
 data DxgiModeScanlineOrder = DxgiModeScanlineOrderUnspecified
                            | DxgiModeScanlineOrderProgressive
                            | DxgiModeScanlineOrderUpperFieldFirst
@@ -91,7 +135,19 @@ instance Enum DxgiModeScanlineOrder where
   toEnum 1 = DxgiModeScanlineOrderProgressive
   toEnum 2 = DxgiModeScanlineOrderUpperFieldFirst
   toEnum 3 = DxgiModeScanlineOrderLowerFieldFirst
-                           
+  
+instance Storable DxgiModeScanlineOrder where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff ptr 0
+  poke ptr = pokeByteOff ptr 0
+
+instance CStorable DxgiModeScanlineOrder where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
+   
 data DxgiModeScaling = DxgiModeScalingUnspecified
                      | DxgiModeScalingCentered
                      | DxgiModeScalingStretched
@@ -105,6 +161,18 @@ instance Enum DxgiModeScaling where
   toEnum 1 = DxgiModeScalingCentered
   toEnum 2 = DxgiModeScalingStretched
   
+instance Storable DxgiModeScaling where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff ptr 0
+  poke ptr = pokeByteOff ptr 0
+  
+instance CStorable DxgiModeScaling where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
+  
 data DxgiSwapEffect = DxgiSwapEffectDiscard
                     | DxgiSwapEffectSequential
                     deriving (Eq, Show)
@@ -114,3 +182,15 @@ instance Enum DxgiSwapEffect where
   fromEnum DxgiSwapEffectSequential = 1
   toEnum 0 = DxgiSwapEffectDiscard
   toEnum 1 = DxgiSwapEffectSequential
+  
+instance Storable DxgiSwapEffect where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff ptr 0
+  poke ptr = pokeByteOff ptr 0
+  
+instance CStorable DxgiSwapEffect where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
