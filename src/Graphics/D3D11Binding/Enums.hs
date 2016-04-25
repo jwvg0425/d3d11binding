@@ -1,6 +1,7 @@
 module Graphics.D3D11Binding.Enums where
 
 import Data.Int
+import Data.Word
 import Foreign.Storable
 import Foreign.CStorable
 
@@ -232,5 +233,5 @@ instance CStorable D3D11CreateDeviceFlag where
   cPeek = peek
   cPoke = poke
 
-createDeviceFlag :: [D3D11CreateDeviceFlag] -> Int32
+createDeviceFlag :: [D3D11CreateDeviceFlag] -> Word32
 createDeviceFlag = sum . map (fromIntegral . fromEnum)

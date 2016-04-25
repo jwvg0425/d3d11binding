@@ -70,8 +70,8 @@ instance Storable DxgiSampleDesc where
   poke = cPoke
   peek = cPeek
   
-data IDXGISwapChain = IDXGISwapChain
+data IDxgiSwapChain = IDxgiSwapChain
 data ID3D11Device = ID3D11Device
 data ID3D11DeviceContext = ID3D11DeviceContext
 data ID3D11RenderTargetView = ID3D11RenderTargetView
-data IDXGIAdapter = IDXGIAdapter
+data IDxgiAdapter = IDxgiAdapter
