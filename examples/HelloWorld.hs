@@ -5,15 +5,16 @@ import System.Exit
 import Control.Exception
 import Control.Monad
 
+import Foreign.Ptr
+
 import Graphics.Win32
 import System.Win32.DLL (getModuleHandle)
 
-import Graphics.D3D11Binding.Enums
-import Graphics.D3D11Binding.Types
+import Graphics.D3D11Binding
 
 main :: IO ()
 main = do
-  hWnd <- createDefaultWindow 600 600 wndProc
+  hWnd <- createDefaultWindow 800 600 wndProc
   messagePump hWnd
 
 wndProc hwnd wmsg wParam lParam = defWindowProc (Just hwnd) wmsg wParam lParam
@@ -44,10 +45,37 @@ createDefaultWindow width height wndProc = do
        Nothing
        mainInstance
        wndProc
+  
+  let bd = DxgiModeDesc 
+            800 
+            600 
+            (DxgiRational 60 1) 
+            DxgiFormatR8G8B8A8Unorm 
+            DxgiModeScanlineOrderUnspecified 
+            DxgiModeScalingUnspecified
+  
+  let sd = DxgiSwapChainDesc
+            bd
+            (DxgiSampleDesc 1 0)
+            dxgiUsageRenderTargetOutput
+            1
+            w
+            True
+            DxgiSwapEffectDiscard
+            0
+  
+  res <- d3d11CreateDeviceAndSwapChain
+          nullPtr 
+          D3DDriverTypeHardware
+          nullPtr
+          [D3D11CreateDeviceDebug]
+          [D3DFeatureLevel11_0, D3DFeatureLevel10_1, D3DFeatureLevel10_0]
+          sd
+     
   showWindow w sW_SHOWNORMAL
   updateWindow w
   return w
-  
+    
 messagePump :: HWND -> IO ()
 messagePump hwnd = Graphics.Win32.allocaMessage $ \ msg ->
   let pump = do
