@@ -2,6 +2,7 @@
 module Graphics.D3D11Binding.Types where
 import GHC.Generics (Generic)
 import Data.Word
+import Data.Bits
 import Control.Applicative
 import Foreign.Storable
 import Foreign.CStorable
@@ -11,6 +12,27 @@ import Graphics.Win32
 import Graphics.D3D11Binding.Enums
 
 type DxgiUsage = Word32
+
+dxgiUsageShaderInput :: DxgiUsage
+dxgiUsageShaderInput = shift 1 4
+
+dxgiUsageRenderTargetOutput :: DxgiUsage
+dxgiUsageRenderTargetOutput = shift 1 5
+
+dxgiUsageBackBuffer :: DxgiUsage
+dxgiUsageBackBuffer = shift 1 6
+
+dxgiUsageShared :: DxgiUsage
+dxgiUsageShared = shift 1 7
+
+dxgiUsageReadOnly :: DxgiUsage
+dxgiUsageReadOnly = shift 1 8
+
+dxgiUsageDiscardOnPresent :: DxgiUsage
+dxgiUsageDiscardOnPresent = shift 1 9
+
+dxgiUsageUnorderedAccess :: DxgiUsage
+dxgiUsageUnorderedAccess = shift 1 10
 
 data DxgiSwapChainDesc = DxgiSwapChainDesc
   { bufferDesc :: DxgiModeDesc
