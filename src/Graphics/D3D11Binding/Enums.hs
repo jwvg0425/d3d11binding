@@ -2,6 +2,8 @@ module Graphics.D3D11Binding.Enums where
 
 import Data.Int
 import Data.Word
+import Data.Bits
+import Foreign.Ptr
 import Foreign.Storable
 import Foreign.CStorable
 
@@ -31,8 +33,8 @@ instance Enum D3DDriverType where
 instance Storable D3DDriverType where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
   alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
-  peek ptr = peekByteOff ptr 0
-  poke ptr = pokeByteOff ptr 0
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
   
 instance CStorable D3DDriverType where
   cSizeOf = sizeOf
@@ -66,8 +68,8 @@ instance Enum D3DFeatureLevel where
 instance Storable D3DFeatureLevel where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
   alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
-  peek ptr = peekByteOff ptr 0
-  poke ptr = pokeByteOff ptr 0
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
   
 instance CStorable D3DFeatureLevel where
   cSizeOf = sizeOf
@@ -140,8 +142,8 @@ instance Enum DxgiFormat where
 instance Storable DxgiFormat where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
   alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
-  peek ptr = peekByteOff ptr 0
-  poke ptr = pokeByteOff ptr 0
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
 
 instance CStorable DxgiFormat where
   cSizeOf = sizeOf
@@ -169,8 +171,8 @@ instance Enum DxgiModeScanlineOrder where
 instance Storable DxgiModeScanlineOrder where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
   alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
-  peek ptr = peekByteOff ptr 0
-  poke ptr = pokeByteOff ptr 0
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
 
 instance CStorable DxgiModeScanlineOrder where
   cSizeOf = sizeOf
@@ -195,8 +197,8 @@ instance Enum DxgiModeScaling where
 instance Storable DxgiModeScaling where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
   alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
-  peek ptr = peekByteOff ptr 0
-  poke ptr = pokeByteOff ptr 0
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
   
 instance CStorable DxgiModeScaling where
   cSizeOf = sizeOf
@@ -218,8 +220,8 @@ instance Enum DxgiSwapEffect where
 instance Storable DxgiSwapEffect where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
   alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
-  peek ptr = peekByteOff ptr 0
-  poke ptr = pokeByteOff ptr 0
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
   
 instance CStorable DxgiSwapEffect where
   cSizeOf = sizeOf
@@ -250,8 +252,8 @@ instance Enum D3D11CreateDeviceFlag where
 instance Storable D3D11CreateDeviceFlag where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
   alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
-  peek ptr = peekByteOff ptr 0
-  poke ptr = pokeByteOff ptr 0
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
   
 instance CStorable D3D11CreateDeviceFlag where
   cSizeOf = sizeOf
@@ -260,4 +262,4 @@ instance CStorable D3D11CreateDeviceFlag where
   cPoke = poke
 
 createDeviceFlag :: [D3D11CreateDeviceFlag] -> Word32
-createDeviceFlag = sum . map (fromIntegral . fromEnum)
+createDeviceFlag = foldl (.|.) 0 . map (fromIntegral . fromEnum)
