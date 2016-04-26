@@ -104,11 +104,37 @@ data DxgiFormat = DxgiFormatUnknown
                 | DxgiFormatR11G11B10Float
                 | DxgiFormatR8G8B8A8Typeless
                 | DxgiFormatR8G8B8A8Unorm
+                | DxgiFormatR8G8B8A8UnormSRGB
+                | DxgiFormatR8G8B8A8Uint
+                | DxgiFormatR8G8B8A8Snorm
+                | DxgiFormatR8G8B8A8Sint
+                | DxgiFormatR16G16Typeless
+                | DxgiFormatR16G16Float
+                | DxgiFormatR16G16Unorm
+                | DxgiFormatR16G16Uint
+                | DxgiFormatR16G16Snorm
+                | DxgiFormatR16G16Sint
+                | DxgiFormatR32Typeless
+                | DxgiFormatD32Float
+                | DxgiFormatR32Float
+                | DxgiFormatR32Uint
+                | DxgiFormatR32Sint
+                | DxgiFormatR24G8Typeless
+                | DxgiFormatD24UnormS8Uint
+                | DxgiFormatR24UnormX8Typeless
+                | DxgiFormatX24TypelessG8Uint
+                | DxgiFormatR8G8Typeless
+                | DxgiFormatR8G8Unorm
+                | DxgiFormatR8G8Uint
+                | DxgiFormatR8G8Snorm
+                | DxgiFormatR8G8Sint
                 deriving (Eq, Show)
 
 instance Enum DxgiFormat where
   fromEnum DxgiFormatUnknown = 0
+  fromEnum DxgiFormatR8G8B8A8Unorm = 28
   toEnum 0 = DxgiFormatUnknown
+  toEnum 28 = DxgiFormatR8G8B8A8Unorm
   toEnum unmatched = error ("DxgiFormat.toEnum: cannot match " ++ show unmatched)
 
 instance Storable DxgiFormat where
