@@ -91,9 +91,3 @@ instance Storable DxgiSampleDesc where
   alignment = cAlignment
   poke = cPoke
   peek = cPeek
-  
-data IDxgiSwapChain = IDxgiSwapChain
-data ID3D11Device = ID3D11Device
-data ID3D11DeviceContext = ID3D11DeviceContext
-data ID3D11RenderTargetView = ID3D11RenderTargetView
-data IDxgiAdapter = IDxgiAdapter

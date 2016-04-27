@@ -12,6 +12,8 @@ import Graphics.Win32
 
 import Graphics.D3D11Binding.Enums
 import Graphics.D3D11Binding.Types
+import Graphics.D3D11Binding.Interface
+import Graphics.D3D11Binding.GUID
 
 import Foreign.Marshal.Array
 import Foreign.Marshal.Alloc
