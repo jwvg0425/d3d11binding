@@ -151,3 +151,16 @@ instance Storable D3D11Viewport where
   alignment = cAlignment
   poke = cPoke
   peek = cPeek
+  
+data Color = Color 
+  { red :: Float
+  , green :: Float
+  , blue :: Float
+  , alpha :: Float } deriving (Generic)
+
+instance CStorable Color
+instance Storable Color where
+  sizeOf = cSizeOf
+  alignment = cAlignment
+  poke = cPoke
+  peek = cPeek
