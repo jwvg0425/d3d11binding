@@ -20,10 +20,23 @@ foreign import stdcall "PostQuitMessage" postQuitMessage :: Int32 -> IO ()
 main :: IO ()
 main = do
   hWnd <- createDefaultWindow 800 600 wndProc
+  useDevice hWnd $ \swapChain device deviceContext renderTargetView -> do
+    vb <- compileShaderFromFile "fx/HelloWorld.fx" "VS" "vs_4_0"
+    use vb $ \vsBlob -> do
+      pointer <- getBufferPointer vsBlob
+      size <- getBufferSize vsBlob
+      Right vertexShader <- createVertexShader 
+                              device
+                              pointer
+                              size
+                              nullPtr
+                             
+      messagePump hWnd deviceContext swapChain renderTargetView
+
+useDevice hWnd proc = do
   (s, d, dc, r) <- initDevice hWnd
-  vsBlob <- compileShaderFromFile "fx/HelloWorld.fx" "VS" "vs_4_0"
-  use s $ \swapChain -> use d $ \device -> use dc $ \deviceContext -> use r $ \renderTargetView -> do
-    messagePump hWnd deviceContext swapChain renderTargetView
+  use s $ \swapChain -> use d $ \device -> use dc $ \deviceContext -> use r $ \renderTargetView ->
+    proc swapChain device deviceContext renderTargetView
   
 wndProc :: WindowClosure
 wndProc hWnd msg wParam lParam
