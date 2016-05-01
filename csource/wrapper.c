@@ -30,3 +30,12 @@ ULONG Release(IUnknown* This)
 {
   return This->lpVtbl->Release(This);
 }
+
+void OMSetRenderTargets( 
+  ID3D11DeviceContext* This,
+  UINT NumViews, 
+  ID3D11RenderTargetView *const *ppRenderTargetViews, 
+  ID3D11DepthStencilView *pDepthStencilView)
+{
+  This->lpVtbl->OMSetRenderTargets(This, NumViews, ppRenderTargetViews, pDepthStencilView);
+}

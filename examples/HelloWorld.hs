@@ -75,6 +75,8 @@ createDefaultWindow width height wndProc = do
   Right (backBuffer :: Ptr ID3D11Texture2D) <- getBuffer swapChain (fromIntegral 0)
   Right renderTargetView <- use backBuffer $ \b -> createRenderTargetView device b Nothing
   
+  omSetRenderTargets deviceContext 1 renderTargetView nullPtr
+  
   showWindow w sW_SHOWNORMAL
   updateWindow w
   return w
