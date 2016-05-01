@@ -60,3 +60,13 @@ void ClearState(ID3D11DeviceContext* This)
 {
   This->lpVtbl->ClearState(This);
 }
+
+void* GetBufferPointer(ID3DBlob* This)
+{
+  return This->lpVtbl->GetBufferPointer(This);
+}
+
+void GetBufferSize(ID3DBlob* This)
+{
+  This->lpVtbl->GetBufferSize(This);
+}
