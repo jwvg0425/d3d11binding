@@ -34,6 +34,7 @@ library
     Graphics.D3D11Binding.Interface.D3D11RenderTargetView
     Graphics.D3D11Binding.Interface.D3D11Resource
     Graphics.D3D11Binding.Interface.D3DBlob
+    Graphics.D3D11Binding.Interface.D3DInclude
     
     Graphics.D3D11Binding.Interface.DxgiAdapter
     Graphics.D3D11Binding.Interface.DxgiSwapChain
