@@ -22,6 +22,18 @@ library
     Graphics.D3D11Binding.Enums
     Graphics.D3D11Binding.Types
     Graphics.D3D11Binding.Interface
+    
+    Graphics.D3D11Binding.Interface.D3D11Device
+    Graphics.D3D11Binding.Interface.D3D11DeviceContext
+    Graphics.D3D11Binding.Interface.D3D11RenderTargetView
+    Graphics.D3D11Binding.Interface.D3D11Resource
+    
+    Graphics.D3D11Binding.Interface.DxgiAdapter
+    Graphics.D3D11Binding.Interface.DxgiSwapChain
+    
+    Graphics.D3D11Binding.Interface.Texture2D
+    Graphics.D3D11Binding.Interface.Unknown
+    
     Graphics.D3D11Binding.GUID
   -- other-modules:       
   other-extensions: ForeignFunctionInterface, CPP   

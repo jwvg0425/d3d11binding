@@ -1,0 +1,3 @@
+module Graphics.D3D11Binding.Interface.D3D11RenderTargetView where
+
+data ID3D11RenderTargetView = ID3D11RenderTargetView
