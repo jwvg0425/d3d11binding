@@ -70,3 +70,13 @@ void GetBufferSize(ID3DBlob* This)
 {
   This->lpVtbl->GetBufferSize(This);
 }
+
+HRESULT CreateVertexShader(
+  ID3D11Device* This,
+  const void *pShaderBytecode,
+  SIZE_T BytecodeLength,
+  ID3D11ClassLinkage *pClassLinkage,
+  ID3D11VertexShader **ppVertexShader)
+{
+    return This->lpVtbl->CreateVertexShader(This, pShaderBytecode, BytecodeLength, pClassLinkage, ppVertexShader);
+}

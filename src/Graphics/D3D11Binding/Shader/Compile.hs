@@ -13,6 +13,8 @@ import Foreign.C.String
 
 import Graphics.Win32
 
+import Graphics.D3D11Binding.Utils
+
 import Graphics.D3D11Binding.Interface.D3DBlob
 import Graphics.D3D11Binding.Interface.D3DInclude
 
@@ -72,13 +74,7 @@ d3dCompile source sourceName defines pInclude entryPoint target compileFlags eff
           return $ Left (hr, pErrorMsgs)
         else do
           pCode <- peek ppCode
-          return $ Right pCode            
-  where maybePoke Nothing proc = proc nullPtr
-        maybePoke (Just m) proc = alloca $ \ptr -> do
-          poke ptr m
-          proc ptr
-        maybeWithCString Nothing proc = proc nullPtr
-        maybeWithCString (Just m) proc = withCString m proc
+          return $ Right pCode
 
 d3dCompileFromFile
   :: String -> Maybe String -> 

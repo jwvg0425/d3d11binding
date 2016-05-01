@@ -4,6 +4,7 @@ module Graphics.D3D11Binding
 , module Graphics.D3D11Binding.Interface
 , module Graphics.D3D11Binding.Shader
 , module Graphics.D3D11Binding.GUID
+, module Graphics.D3D11Binding.Utils
 , d3d11CreateDeviceAndSwapChain
 ) where
 
@@ -18,6 +19,7 @@ import Graphics.D3D11Binding.Types
 import Graphics.D3D11Binding.Interface
 import Graphics.D3D11Binding.Shader
 import Graphics.D3D11Binding.GUID
+import Graphics.D3D11Binding.Utils
 
 import Foreign.Marshal.Array
 import Foreign.Marshal.Alloc
