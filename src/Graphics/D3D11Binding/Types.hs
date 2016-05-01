@@ -56,7 +56,7 @@ data DxgiModeDesc = DxgiModeDesc
   { width :: Word32
   , height :: Word32
   , refreshRate :: DxgiRational
-  , format :: DxgiFormat
+  , dxgiModeFormat :: DxgiFormat
   , scanlineOrdering :: DxgiModeScanlineOrder
   , scaling :: DxgiModeScaling }
   deriving (Generic)
@@ -87,6 +87,51 @@ data DxgiSampleDesc = DxgiSampleDesc
 
 instance CStorable DxgiSampleDesc 
 instance Storable DxgiSampleDesc where
+  sizeOf = cSizeOf
+  alignment = cAlignment
+  poke = cPoke
+  peek = cPeek
+  
+data Rtv = Rtv Word32 Word32 Word32 deriving (Generic)
+
+bufferRtv :: Word32 -> Word32 -> Rtv
+bufferRtv d1 d2 = Rtv d1 d2 (fromIntegral 0)
+
+tex1dRtv :: Word32 -> Rtv
+tex1dRtv d1 = Rtv d1 (fromIntegral 0) (fromIntegral 0)
+
+tex1dArrayRtv :: Word32 -> Word32 -> Word32 -> Rtv
+tex1dArrayRtv d1 d2 d3 = Rtv d1 d2 d3
+
+tex2dRtv :: Word32 -> Rtv
+tex2dRtv d1 = Rtv d1 (fromIntegral 0) (fromIntegral 0)
+
+tex2dArrayRtv :: Word32 -> Word32 -> Word32 -> Rtv
+tex2dArrayRtv d1 d2 d3 = Rtv d1 d2 d3
+
+tex2dMsRtv :: Rtv
+tex2dMsRtv = Rtv (fromIntegral 0) (fromIntegral 0) (fromIntegral 0)
+
+tex2dMsArrayRtv :: Word32 -> Word32 -> Rtv
+tex2dMsArrayRtv d1 d2 = Rtv d1 d2 (fromIntegral 0)
+
+tex3dArrayRtv :: Word32 -> Word32 -> Word32 -> Rtv
+tex3dArrayRtv d1 d2 d3 = Rtv d1 d2 d3
+
+instance CStorable Rtv
+instance Storable Rtv where
+  sizeOf = cSizeOf
+  alignment = cAlignment
+  poke = cPoke
+  peek = cPeek
+  
+data D3D11RenderTargetViewDesc = D3D11RenderTargetViewDesc
+  { renderTargetViewFormat :: DxgiFormat
+  , viewDimension :: D3D11RtvDimension
+  , rtv :: Rtv } deriving (Generic)
+
+instance CStorable D3D11RenderTargetViewDesc
+instance Storable D3D11RenderTargetViewDesc where
   sizeOf = cSizeOf
   alignment = cAlignment
   poke = cPoke

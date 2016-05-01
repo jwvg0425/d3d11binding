@@ -21,6 +21,8 @@ library
     Graphics.D3D11Binding
     Graphics.D3D11Binding.Enums
     Graphics.D3D11Binding.Types
+    Graphics.D3D11Binding.Interface
+    Graphics.D3D11Binding.GUID
   -- other-modules:       
   other-extensions: ForeignFunctionInterface, CPP   
   build-depends:       
@@ -33,13 +35,16 @@ library
     d3d11
     d3dx11
     D3DCompiler
+    d3dxof
     dxgi
     dxguid
   includes:
     DXGI.h
     D3D11.h
+    d3d11shader.h
     D3DCompiler.h
   c-sources:
+    csource/wrapper.c
 
 executable HelloWorld
   main-is: HelloWorld.hs

@@ -263,3 +263,46 @@ instance CStorable D3D11CreateDeviceFlag where
 
 createDeviceFlag :: [D3D11CreateDeviceFlag] -> Word32
 createDeviceFlag = foldl (.|.) 0 . map (fromIntegral . fromEnum)
+
+data D3D11RtvDimension = D3D11RtvDimensionUnknown
+                       | D3D11RtvDimensionBuffer
+                       | D3D11RtvDimensionTexture1D
+                       | D3D11RtvDimensionTexture1DArray
+                       | D3D11RtvDimensionTexture2D
+                       | D3D11RtvDimensionTexture2DArray
+                       | D3D11RtvDimensionTexture2DMs
+                       | D3D11RtvDimensionTexture2DMsArray
+                       | D3D11RtvDimensionTexture3D
+
+instance Enum D3D11RtvDimension where
+  fromEnum D3D11RtvDimensionUnknown = 0
+  fromEnum D3D11RtvDimensionBuffer = 1
+  fromEnum D3D11RtvDimensionTexture1D = 2
+  fromEnum D3D11RtvDimensionTexture1DArray = 3
+  fromEnum D3D11RtvDimensionTexture2D = 4
+  fromEnum D3D11RtvDimensionTexture2DArray = 5
+  fromEnum D3D11RtvDimensionTexture2DMs = 6
+  fromEnum D3D11RtvDimensionTexture2DMsArray = 7
+  fromEnum D3D11RtvDimensionTexture3D = 8
+  toEnum 0 = D3D11RtvDimensionUnknown
+  toEnum 1 = D3D11RtvDimensionBuffer
+  toEnum 2 = D3D11RtvDimensionTexture1D
+  toEnum 3 = D3D11RtvDimensionTexture1DArray
+  toEnum 4 = D3D11RtvDimensionTexture2D
+  toEnum 5 = D3D11RtvDimensionTexture2DArray
+  toEnum 6 = D3D11RtvDimensionTexture2DMs
+  toEnum 7 = D3D11RtvDimensionTexture2DMsArray
+  toEnum 8 = D3D11RtvDimensionTexture3D
+  toEnum unmatched = error ("D3D11RtvDimension.toEnum: cannot match " ++ show unmatched)
+  
+instance Storable D3D11RtvDimension where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
+  
+instance CStorable D3D11RtvDimension where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke

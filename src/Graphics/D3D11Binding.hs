@@ -1,6 +1,8 @@
 module Graphics.D3D11Binding 
 ( module Graphics.D3D11Binding.Enums
 , module Graphics.D3D11Binding.Types
+, module Graphics.D3D11Binding.Interface
+, module Graphics.D3D11Binding.GUID
 , d3d11CreateDeviceAndSwapChain
 ) where
 

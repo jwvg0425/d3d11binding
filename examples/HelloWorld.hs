@@ -64,14 +64,16 @@ createDefaultWindow width height wndProc = do
             DxgiSwapEffectDiscard
             0
   
-  res <- d3d11CreateDeviceAndSwapChain
+  Right (swapChain, device, featureLevel, deviceContext) <- d3d11CreateDeviceAndSwapChain
           nullPtr 
           D3DDriverTypeHardware
           nullPtr
           [D3D11CreateDeviceDebug]
           [D3DFeatureLevel11_0, D3DFeatureLevel10_1, D3DFeatureLevel10_0]
           sd
-     
+  
+  Right (backBuffer :: Ptr ID3D11Texture2D) <- getBuffer swapChain (fromIntegral 0)
+   
   showWindow w sW_SHOWNORMAL
   updateWindow w
   return w
