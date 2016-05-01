@@ -2,6 +2,7 @@ module Graphics.D3D11Binding
 ( module Graphics.D3D11Binding.Enums
 , module Graphics.D3D11Binding.Types
 , module Graphics.D3D11Binding.Interface
+, module Graphics.D3D11Binding.Shader
 , module Graphics.D3D11Binding.GUID
 , d3d11CreateDeviceAndSwapChain
 ) where
@@ -15,6 +16,7 @@ import Graphics.Win32
 import Graphics.D3D11Binding.Enums
 import Graphics.D3D11Binding.Types
 import Graphics.D3D11Binding.Interface
+import Graphics.D3D11Binding.Shader
 import Graphics.D3D11Binding.GUID
 
 import Foreign.Marshal.Array
