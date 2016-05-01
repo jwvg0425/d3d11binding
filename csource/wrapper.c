@@ -25,3 +25,8 @@ HRESULT GetBuffer(IDXGISwapChain* This,UINT buffer_idx,REFIID riid,void **surfac
 {
   return This->lpVtbl->CreateRenderTargetView(This, pResource, pDesc, ppRTView);
 }
+
+ULONG Release(IUnknown* This)
+{
+  return This->lpVtbl->Release(This);
+}

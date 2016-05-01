@@ -32,14 +32,26 @@ class DxgiSwapChainInterface interface where
 foreign import stdcall "SetEvictionPriority" c_setEvictionPriority
   :: Ptr ID3D11Resource -> Word32 -> IO ()
 
-class D3D11ResourceInterface interface where
+foreign import stdcall "Release" c_release
+ :: Ptr IUnknown -> IO Word32
+
+class UnknownInterface interface where
+  release :: Ptr interface -> IO Word32
+  release ptr = c_release (castPtr ptr)
+  use :: Ptr interface -> (Ptr interface -> IO result) -> IO result
+  use i f = do
+    res <- f i
+    release i
+    return res
+
+class (UnknownInterface interface) => D3D11ResourceInterface interface where
   setEvictionPriority :: Ptr interface -> Word32 -> IO ()
   setEvictionPriority ptr w = c_setEvictionPriority (castPtr ptr) w
 
 foreign import stdcall "CreateRenderTargetView" c_createRenderTargetView
   :: Ptr ID3D11Device -> Ptr ID3D11Resource -> Ptr D3D11RenderTargetViewDesc -> Ptr (Ptr ID3D11RenderTargetView) -> IO HRESULT
   
-class D3D11DeviceInterface interface where
+class (UnknownInterface interface) => D3D11DeviceInterface interface where
   createRenderTargetView 
     :: (D3D11ResourceInterface resource) => 
        Ptr interface -> Ptr resource -> Maybe (D3D11RenderTargetViewDesc) -> IO (Either HRESULT (Ptr ID3D11RenderTargetView))
@@ -51,11 +63,16 @@ class D3D11DeviceInterface interface where
     hr <- c_createRenderTargetView (castPtr this) (castPtr pResource) pDesc renderTargetView
     if hr < 0 then return (Left hr) else Right <$> peek renderTargetView
 
+data IUnknown = IUnknown
+
+instance UnknownInterface IUnknown
+
 data ID3D11Texture2D = ID3D11Texture2D
 
 instance HasGUID ID3D11Texture2D where
   getGUID _ = GUID 0x6f15aaf2 0xd208 0x4e89 [0x9a,0xb4,0x48,0x95,0x35,0xd3,0x4f,0x9c]
 
+instance UnknownInterface ID3D11Texture2D
 instance D3D11ResourceInterface ID3D11Texture2D
 
 data IDxgiSwapChain = IDxgiSwapChain
@@ -64,6 +81,7 @@ instance DxgiSwapChainInterface IDxgiSwapChain
 
 data ID3D11Device = ID3D11Device
 
+instance UnknownInterface ID3D11Device
 instance D3D11DeviceInterface ID3D11Device
 
 data ID3D11DeviceContext = ID3D11DeviceContext
