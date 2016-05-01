@@ -3,6 +3,7 @@ import Data.Word
 
 import Foreign.Storable
 import Foreign.Marshal.Alloc
+import Foreign.Marshal.Array
 import Foreign.Ptr
 
 import Graphics.Win32
@@ -14,11 +15,18 @@ import Graphics.D3D11Binding.Interface.D3D11DepthStencilView
 foreign import stdcall "OMSetRenderTargets" c_omSetRenderTargets
   :: Ptr ID3D11DeviceContext -> Word32 -> Ptr (Ptr ID3D11RenderTargetView) -> Ptr ID3D11DepthStencilView -> IO ()
 
+foreign import stdcall "RSSetViewports" c_rsSetViewports
+  :: Ptr ID3D11DeviceContext -> Word32 -> Ptr D3D11Viewport -> IO ()
+
 class (UnknownInterface interface) => D3D11DeviceContextInterface interface where
-  omSetRenderTargets :: Ptr interface -> Word32 -> Ptr ID3D11RenderTargetView -> Ptr ID3D11DepthStencilView -> IO ()
-  omSetRenderTargets ptr numViews renderTargetView depthStencilView = alloca $ \pRenderTargetView -> do
-    poke pRenderTargetView renderTargetView
-    c_omSetRenderTargets (castPtr ptr) numViews pRenderTargetView depthStencilView
+  omSetRenderTargets :: Ptr interface -> [Ptr ID3D11RenderTargetView] -> Ptr ID3D11DepthStencilView -> IO ()
+  omSetRenderTargets ptr renderTargetViews depthStencilView = alloca $ \pRenderTargetViews -> do
+    pokeArray pRenderTargetViews renderTargetViews
+    c_omSetRenderTargets (castPtr ptr) (fromIntegral $ length renderTargetViews) pRenderTargetViews depthStencilView
+  rsSetViewports :: Ptr interface -> [D3D11Viewport] -> IO ()
+  rsSetViewports ptr viewports = alloca $ \pViewports -> do
+    pokeArray pViewports viewports
+    c_rsSetViewports (castPtr ptr) (fromIntegral $ length viewports) pViewports
 
 data ID3D11DeviceContext = ID3D11DeviceContext
 

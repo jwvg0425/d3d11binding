@@ -136,3 +136,18 @@ instance Storable D3D11RenderTargetViewDesc where
   alignment = cAlignment
   poke = cPoke
   peek = cPeek
+  
+data D3D11Viewport = D3D11Viewport
+  { topLeftX :: Float
+  , topLeftY :: Float
+  , viewportWidth :: Float
+  , viewportHeight :: Float
+  , minDepth :: Float
+  , maxDepth :: Float } deriving (Generic)
+
+instance CStorable D3D11Viewport
+instance Storable D3D11Viewport where
+  sizeOf = cSizeOf
+  alignment = cAlignment
+  poke = cPoke
+  peek = cPeek

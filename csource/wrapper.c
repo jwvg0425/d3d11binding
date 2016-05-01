@@ -39,3 +39,11 @@ void OMSetRenderTargets(
 {
   This->lpVtbl->OMSetRenderTargets(This, NumViews, ppRenderTargetViews, pDepthStencilView);
 }
+
+void RSSetViewports(
+  ID3D11DeviceContext* This,
+  UINT NumViewports,
+  const D3D11_VIEWPORT *pViewports)
+{
+  This->lpVtbl->RSSetViewports(This, NumViewports, pViewports);
+}
