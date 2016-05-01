@@ -34,8 +34,18 @@ class (UnknownInterface interface) => D3D11DeviceContextInterface interface wher
   clearRenderTargetView ptr renderTargetView color = alloca $ \pColor -> do
     poke pColor color
     c_clearRenderTargetView (castPtr ptr) renderTargetView (castPtr pColor)
+  clearState :: Ptr interface -> IO ()
+  clearState ptr = c_clearState (castPtr ptr)
 
 data ID3D11DeviceContext = ID3D11DeviceContext
 
-instance UnknownInterface ID3D11DeviceContext
+foreign import stdcall "ClearState" c_clearState
+ :: Ptr ID3D11DeviceContext -> IO ()
+
+instance UnknownInterface ID3D11DeviceContext where
+  use i f = do
+    res <- f i
+    clearState i
+    release i
+    return res
 instance D3D11DeviceContextInterface ID3D11DeviceContext

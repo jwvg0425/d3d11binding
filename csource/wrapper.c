@@ -55,3 +55,8 @@ void ClearRenderTargetView(
 {
   This->lpVtbl->ClearRenderTargetView(This, pRenderTargetView, ColorRGBA);
 }
+
+void ClearState(ID3D11DeviceContext* This)
+{
+  This->lpVtbl->ClearState(This);
+}
