@@ -43,6 +43,9 @@ library
     
     Graphics.D3D11Binding.Shader
     
+    Graphics.D3D11Binding.Shader.Compile
+    Graphics.D3D11Binding.Shader.Flags
+    
     Graphics.D3D11Binding.GUID
   -- other-modules:       
   other-extensions: ForeignFunctionInterface, CPP   
