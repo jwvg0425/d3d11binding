@@ -3,9 +3,10 @@
 
 name:                d3d11binding
 version:             0.0.0.1
-synopsis:            haskell directX 11 binding
--- description:         
+synopsis:            A raw binding for the directX 11
+description:         A raw binding for the directX 11   
 homepage:            https://github.com/jwvg0425/d3d11binding
+bug-reports:         https://github.com/jwvg0425/d3d11binding/issues
 license:             MIT
 license-file:        LICENSE
 author:              jwvg0425
@@ -15,6 +16,10 @@ category:            Graphics
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
+
+Source-Repository HEAD
+  Type:     git
+  Location: git://github.com/jwvg0425/d3d11binding.git
 
 library
   exposed-modules:

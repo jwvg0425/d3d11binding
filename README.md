@@ -1,2 +1,3 @@
 # d3d11binding
-Haskell directX 11 binding
+
+this package is a raw binding for the directX 11
