@@ -18,6 +18,9 @@ foreign import stdcall "OMSetRenderTargets" c_omSetRenderTargets
 foreign import stdcall "RSSetViewports" c_rsSetViewports
   :: Ptr ID3D11DeviceContext -> Word32 -> Ptr D3D11Viewport -> IO ()
 
+foreign import stdcall "ClearRenderTargetView" c_clearRenderTargetView
+  :: Ptr ID3D11DeviceContext -> Ptr ID3D11RenderTargetView -> Ptr Float -> IO ()
+
 class (UnknownInterface interface) => D3D11DeviceContextInterface interface where
   omSetRenderTargets :: Ptr interface -> [Ptr ID3D11RenderTargetView] -> Ptr ID3D11DepthStencilView -> IO ()
   omSetRenderTargets ptr renderTargetViews depthStencilView = alloca $ \pRenderTargetViews -> do
@@ -27,6 +30,10 @@ class (UnknownInterface interface) => D3D11DeviceContextInterface interface wher
   rsSetViewports ptr viewports = alloca $ \pViewports -> do
     pokeArray pViewports viewports
     c_rsSetViewports (castPtr ptr) (fromIntegral $ length viewports) pViewports
+  clearRenderTargetView :: Ptr interface -> Ptr ID3D11RenderTargetView -> Color -> IO ()
+  clearRenderTargetView ptr renderTargetView color = alloca $ \pColor -> do
+    poke pColor color
+    c_clearRenderTargetView (castPtr ptr) renderTargetView (castPtr pColor)
 
 data ID3D11DeviceContext = ID3D11DeviceContext
 

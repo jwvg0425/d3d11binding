@@ -47,3 +47,11 @@ void RSSetViewports(
 {
   This->lpVtbl->RSSetViewports(This, NumViewports, pViewports);
 }
+
+void ClearRenderTargetView(
+  ID3D11DeviceContext* This,
+  ID3D11RenderTargetView *pRenderTargetView, 
+  const FLOAT ColorRGBA[ 4 ])
+{
+  This->lpVtbl->ClearRenderTargetView(This, pRenderTargetView, ColorRGBA);
+}
