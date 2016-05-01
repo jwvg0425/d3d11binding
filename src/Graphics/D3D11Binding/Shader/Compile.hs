@@ -1,14 +1,22 @@
 module Graphics.D3D11Binding.Shader.Compile where
+
+import System.IO
+
+import Data.Bits
 import Data.Word
+import Data.Maybe
 
 import Foreign.Ptr
 import Foreign.Storable
+import Foreign.Marshal.Alloc
 import Foreign.C.String
 
 import Graphics.Win32
 
 import Graphics.D3D11Binding.Interface.D3DBlob
 import Graphics.D3D11Binding.Interface.D3DInclude
+
+import Graphics.D3D11Binding.Shader.Flags
 
 data D3DShaderMacro = D3DShaderMacro
   { name :: String
@@ -31,5 +39,54 @@ instance Storable D3DShaderMacro where
 foreign import stdcall "D3DCompile" c_d3dCompile
  :: Ptr () -> Word32 -> CString ->
     Ptr D3DShaderMacro -> Ptr ID3DInclude ->
-    CString -> CString -> Word32 -> Word32 ->
+    CString -> CString -> D3DCompileFlag -> D3DCompileEffectFlag ->
     Ptr (Ptr ID3DBlob) -> Ptr (Ptr ID3DBlob) -> IO HRESULT
+    
+d3dCompile 
+  :: String -> Maybe String -> 
+     Maybe D3DShaderMacro -> Ptr ID3DInclude -> 
+     Maybe String -> String -> 
+     [D3DCompileFlag] -> [D3DCompileEffectFlag] ->
+     IO (Either (HRESULT, Ptr ID3DBlob) (Ptr ID3DBlob))
+d3dCompile source sourceName defines pInclude entryPoint target compileFlags effectFlags = do
+  withCStringLen source $ \(csource, len) -> withCString target $ \pTarget ->
+    maybeWithCString sourceName $ \pSourceName -> maybePoke defines $ \pDefines ->
+      maybeWithCString entryPoint $ \pEntryPoint -> alloca $ \ppCode -> alloca $ \ppErrorMsgs -> do
+        let sFlag = foldl (.|.) 0 compileFlags
+        let eFlag = foldl (.|.) 0 effectFlags
+        hr <- c_d3dCompile 
+                (castPtr csource) 
+                (fromIntegral len) 
+                pSourceName 
+                pDefines 
+                pInclude 
+                pEntryPoint 
+                pTarget 
+                sFlag 
+                eFlag 
+                ppCode 
+                ppErrorMsgs
+        if hr < 0 
+        then do
+          pErrorMsgs <- peek ppErrorMsgs
+          return $ Left (hr, pErrorMsgs)
+        else do
+          pCode <- peek ppCode
+          return $ Right pCode            
+  where maybePoke Nothing proc = proc nullPtr
+        maybePoke (Just m) proc = alloca $ \ptr -> do
+          poke ptr m
+          proc ptr
+        maybeWithCString Nothing proc = proc nullPtr
+        maybeWithCString (Just m) proc = withCString m proc
+
+d3dCompileFromFile
+  :: String -> Maybe String -> 
+     Maybe D3DShaderMacro -> Ptr ID3DInclude -> 
+     Maybe String -> String -> 
+     [D3DCompileFlag] -> [D3DCompileEffectFlag] ->
+     IO (Either (HRESULT, Ptr ID3DBlob) (Ptr ID3DBlob))
+d3dCompileFromFile fileName sourceName defines pInclude entryPoint target compileFlags effectFlags =
+  withFile fileName ReadMode $ \handle -> do
+    contents <- hGetContents handle
+    d3dCompile contents sourceName defines pInclude entryPoint target compileFlags effectFlags

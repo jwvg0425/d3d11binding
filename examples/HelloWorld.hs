@@ -21,6 +21,7 @@ main :: IO ()
 main = do
   hWnd <- createDefaultWindow 800 600 wndProc
   (s, d, dc, r) <- initDevice hWnd
+  vsBlob <- compileShaderFromFile "fx/HelloWorld.fx" "VS" "vs_4_0"
   use s $ \swapChain -> use d $ \device -> use dc $ \deviceContext -> use r $ \renderTargetView -> do
     messagePump hWnd deviceContext swapChain renderTargetView
   
@@ -64,6 +65,19 @@ initDevice hWnd = do
   rsSetViewports deviceContext [D3D11Viewport 0 0 800 600 0 1]
   
   return (swapChain, device, deviceContext, renderTargetView)
+
+compileShaderFromFile :: String -> String -> String -> IO (Ptr ID3DBlob)
+compileShaderFromFile fileName entryPoint shaderModel = do
+  Right res <- d3dCompileFromFile 
+      fileName
+      Nothing
+      Nothing
+      nullPtr
+      (Just entryPoint)
+      shaderModel
+      [d3dCompileEnableStrictness]
+      []
+  return res
 
 createDefaultWindow :: Int -> Int -> WindowClosure -> IO HWND
 createDefaultWindow width height wndProc = do
