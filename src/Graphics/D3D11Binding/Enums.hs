@@ -130,6 +130,7 @@ data DxgiFormat = DxgiFormatUnknown
                 | DxgiFormatR8G8Uint
                 | DxgiFormatR8G8Snorm
                 | DxgiFormatR8G8Sint
+                | DxgiFormatR16Uint
                 deriving (Eq, Show)
 
 instance Enum DxgiFormat where
@@ -137,10 +138,12 @@ instance Enum DxgiFormat where
   fromEnum DxgiFormatR32G32B32A32Float = 2
   fromEnum DxgiFormatR32G32B32Float = 6
   fromEnum DxgiFormatR8G8B8A8Unorm = 28
+  fromEnum DxgiFormatR16Uint = 57
   toEnum 0 = DxgiFormatUnknown
   toEnum 2 = DxgiFormatR32G32B32A32Float
   toEnum 6 = DxgiFormatR32G32B32Float
   toEnum 28 = DxgiFormatR8G8B8A8Unorm
+  toEnum 57 = DxgiFormatR16Uint
   toEnum unmatched = error ("DxgiFormat.toEnum: cannot match " ++ show unmatched)
 
 instance Storable DxgiFormat where

@@ -6,6 +6,7 @@ import GHC.Generics (Generic)
 import System.Exit
   
 import Data.Int
+import Data.Word
 
 import Control.Exception
 import Control.Monad
@@ -33,6 +34,8 @@ instance Storable SimpleVertex where
   peek = cPeek
 
 instance HasSubresourceData SimpleVertex
+
+instance HasSubresourceData Word32
 
 
 main :: IO ()
@@ -73,7 +76,7 @@ main = do
       return (inputLayout, vertexShader)
     
     pb <- compileShaderFromFile "fx/Cube.fx" "PS" "ps_4_0"
-    ps <- use pb $ \psBlob -> do
+    (idb, ps) <- use pb $ \psBlob -> do
       pointer <- getBufferPointer psBlob
       size <- getBufferSize psBlob
       Right pixelShader <- createPixelShader
@@ -101,10 +104,40 @@ main = do
                         , SimpleVertex (Vertex3 1.0 (-1.0) 1.0) (Color 1.0 1.0 1.0 1.0)
                         , SimpleVertex (Vertex3 (-1.0) (-1.0) 1.0) (Color 0.0 0.0 0.0 1.0) ]
       iaSetVertexBuffers deviceContext 0 [(buffer, fromIntegral $ sizeOf (undefined :: SimpleVertex), 0)]
+      
+      let indexBd = D3D11BufferDesc
+                { byteWidth = fromIntegral $ 36 * sizeOf (undefined :: Word32)
+                , usage = D3D11UsageDefault
+                , bindFlags = d3d11BindFlags [D3D11BindIndexBuffer]
+                , cpuAccessFlags = 0
+                , miscFlags = 0
+                , structureByteStride = 0 }
+      Right indexBuffer <- createBuffer
+                             device
+                             indexBd
+                             ([ 3,1,0,
+                                2,1,3,
+
+                                0,5,4,
+                                1,5,0,
+
+                                3,4,7,
+                                0,4,3,
+
+                                1,6,5,
+                                2,6,1,
+
+                                2,7,6,
+                                3,7,2,
+
+                                6,4,5,
+                                7,4,6 ] :: [Word32])
+      
+      iaSetIndexBuffer deviceContext indexBuffer DxgiFormatR16Uint 0
       iaSetPrimitiveTopology deviceContext D3D11PrimitiveTopologyTrianglelist
-      return pixelShader
+      return (indexBuffer, pixelShader)
     
-    use il $ \inputLayout -> use vs $ \vertexShader -> use ps $ \pixelShader -> do
+    use il $ \inputLayout -> use vs $ \vertexShader -> use idb $ \ indexBuffer -> use ps $ \pixelShader -> do
       messagePump hWnd deviceContext swapChain renderTargetView vertexShader pixelShader
 
 useDevice hWnd proc = do

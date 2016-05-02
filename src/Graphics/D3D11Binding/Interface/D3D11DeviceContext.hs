@@ -37,6 +37,9 @@ foreign import stdcall "IASetInputLayout" c_iaSetInputLayout
 foreign import stdcall "IASetVertexBuffers" c_iaSetVertexBuffers
   :: Ptr ID3D11DeviceContext -> Word32 -> Word32 -> Ptr (Ptr ID3D11Buffer) -> Ptr Word32 -> Ptr Word32 -> IO ()
 
+foreign import stdcall "IASetIndexBuffer" c_iaSetIndexBuffer
+  :: Ptr ID3D11DeviceContext -> Ptr ID3D11Buffer -> Word32 -> Word32 -> IO ()
+
 foreign import stdcall "IASetPrimitiveTopology" c_iaSetPrimitiveTopology
   :: Ptr ID3D11DeviceContext -> Word32 -> IO ()
   
@@ -73,6 +76,8 @@ class (UnknownInterface interface) => D3D11DeviceContextInterface interface wher
     where first (a,_,_) = a
           second (_,b,_) = b
           third (_,_,c) = c
+  iaSetIndexBuffer :: Ptr interface -> Ptr ID3D11Buffer -> DxgiFormat -> Word32 -> IO ()
+  iaSetIndexBuffer ptr buffer format offset = c_iaSetIndexBuffer (castPtr ptr) buffer (fromIntegral $ fromEnum format) offset
   iaSetPrimitiveTopology :: Ptr interface -> D3D11PrimitiveTopology -> IO ()
   iaSetPrimitiveTopology ptr topology = c_iaSetPrimitiveTopology (castPtr ptr) (fromIntegral $ fromEnum topology)
   clearRenderTargetView :: Ptr interface -> Ptr ID3D11RenderTargetView -> Color -> IO ()

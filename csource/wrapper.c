@@ -161,3 +161,12 @@ void Draw(
 {
   This->lpVtbl->Draw(This, VertexCount, StartVertexLocation); 
 }
+
+void IASetIndexBuffer( 
+  ID3D11DeviceContext* This,
+  ID3D11Buffer *pIndexBuffer,
+  DXGI_FORMAT Format,
+  UINT Offset)
+{
+  This->lpVtbl->IASetIndexBuffer(This, pIndexBuffer, Format, Offset);  
+}
