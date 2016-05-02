@@ -138,7 +138,7 @@ compileShaderFromFile fileName entryPoint shaderModel = do
 
 createDefaultWindow :: Int -> Int -> WindowClosure -> IO HWND
 createDefaultWindow width height wndProc = do
-  let winClass = mkClassName "Triangle"
+  let winClass = mkClassName "Triangle Window"
   icon         <- loadIcon   Nothing iDI_APPLICATION
   cursor       <- loadCursor Nothing iDC_ARROW
   bgBrush      <- createSolidBrush (rgb 255 255 255)
@@ -153,7 +153,7 @@ createDefaultWindow width height wndProc = do
     , winClass )
   w <- createWindow
        winClass
-       "Hello, World"
+       "Triangle"
        wS_OVERLAPPEDWINDOW
        Nothing Nothing
        (Just width)
