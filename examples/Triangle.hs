@@ -23,7 +23,7 @@ main = do
   hWnd <- createDefaultWindow 800 600 wndProc
   useDevice hWnd $ \swapChain device deviceContext renderTargetView -> do
     vb <- compileShaderFromFile "fx/HelloWorld.fx" "VS" "vs_4_0"
-    vs <- use vb $ \vsBlob -> do
+    (il, vs) <- use vb $ \vsBlob -> do
       pointer <- getBufferPointer vsBlob
       size <- getBufferSize vsBlob
       Right vertexShader <- createVertexShader 
@@ -45,7 +45,7 @@ main = do
                               pointer
                               size
       iaSetInputLayout deviceContext inputLayout
-      return vertexShader
+      return (inputLayout, vertexShader)
     
     pb <- compileShaderFromFile "fx/HelloWorld.fx" "PS" "ps_4_0"
     ps <- use pb $ \psBlob -> do
@@ -74,7 +74,7 @@ main = do
       iaSetPrimitiveTopology deviceContext D3D11PrimitiveTopologyTrianglelist
       return pixelShader
     
-    use vs $ \vertexShader -> use ps $ \pixelShader -> do
+    use il $ \inputLayout -> use vs $ \vertexShader -> use ps $ \pixelShader -> do
       messagePump hWnd deviceContext swapChain renderTargetView vertexShader pixelShader
 
 useDevice hWnd proc = do

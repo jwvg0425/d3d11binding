@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                d3d11binding
-version:             0.0.0.2
+version:             0.0.0.3
 synopsis:            A raw binding for the directX 11
 description:         A raw binding for the directX 11   
 homepage:            https://github.com/jwvg0425/d3d11binding
@@ -78,8 +78,8 @@ library
   c-sources:
     csource/wrapper.c
 
-executable HelloWorld
-  main-is: HelloWorld.hs
+executable Triangle
+  main-is: Triangle.hs
   -- other-modules:
   -- other-extensions:
   build-depends:
