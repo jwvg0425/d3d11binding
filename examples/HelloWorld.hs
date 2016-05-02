@@ -30,6 +30,7 @@ main = do
                               pointer
                               size
                               nullPtr
+      
       Right inputLayout <- createInputLayout
                               device
                               [D3D11InputElementDesc 
@@ -42,7 +43,8 @@ main = do
                                   (fromIntegral 0)]
                               pointer
                               size
-                             
+      iaSetInputLayout deviceContext inputLayout
+      
       messagePump hWnd deviceContext swapChain renderTargetView
 
 useDevice hWnd proc = do

@@ -89,5 +89,12 @@ HRESULT CreateInputLayout(
   SIZE_T BytecodeLength,
   ID3D11InputLayout** ppInputLayout)
 {
-  return This -> lpVtbl->CreateInputLayout(This, pInputElementDescs, NumElements, pShaderBytecodeWithInputSignature, BytecodeLength, ppInputLayout);
+  return This->lpVtbl->CreateInputLayout(This, pInputElementDescs, NumElements, pShaderBytecodeWithInputSignature, BytecodeLength, ppInputLayout);
+}
+
+void STDMETHODCALLTYPE IASetInputLayout( 
+  ID3D11DeviceContext* This,
+  ID3D11InputLayout *pInputLayout)
+{
+  return This->lpVtbl->IASetInputLayout(This, pInputLayout);
 }
