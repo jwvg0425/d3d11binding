@@ -1,6 +1,6 @@
 
 # Triangle
 
-[!screenshot](images/triangle.png)
+![screenshot](images/triangle.png)
 
 simple example
