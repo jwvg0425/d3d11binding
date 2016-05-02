@@ -7,6 +7,7 @@ import System.Exit
   
 import Data.Int
 import Data.Word
+import Data.Matrix
 
 import Control.Exception
 import Control.Monad
@@ -161,8 +162,9 @@ main = do
     
     Right cb <- createBuffer device constantBd ([] :: [ConstantBuffer])
     
-    use il $ \inputLayout -> use vs $ \vertexShader -> use idb $ \ indexBuffer -> use ps $ \pixelShader -> do
-      messagePump hWnd deviceContext swapChain renderTargetView vertexShader pixelShader
+    use cb $ \constantBuffer -> use il $ \inputLayout -> 
+      use vs $ \vertexShader -> use idb $ \ indexBuffer -> use ps $ \pixelShader -> do
+        messagePump hWnd deviceContext swapChain renderTargetView vertexShader pixelShader constantBuffer
 
 useDevice hWnd proc = do
   (s, d, dc, r) <- initDevice hWnd
@@ -262,8 +264,8 @@ pM_NOYIELD = 0x0002
 messagePump 
   :: HWND -> Ptr ID3D11DeviceContext -> 
      Ptr IDxgiSwapChain -> Ptr ID3D11RenderTargetView ->
-     Ptr ID3D11VertexShader -> Ptr ID3D11PixelShader -> IO ()
-messagePump hwnd deviceContext swapChain renderTargetView vs ps = Graphics.Win32.allocaMessage $ \ msg ->
+     Ptr ID3D11VertexShader -> Ptr ID3D11PixelShader -> Ptr ID3D11Buffer -> IO ()
+messagePump hwnd deviceContext swapChain renderTargetView vs ps cb = Graphics.Win32.allocaMessage $ \ msg ->
   let pump = do
         m <- peekByteOff msg 4 :: IO WindowMessage
         when (m /= wM_QUIT) $ do
@@ -274,19 +276,28 @@ messagePump hwnd deviceContext swapChain renderTargetView vs ps = Graphics.Win32
             dispatchMessage msg
             return ()
           else do
-            render deviceContext swapChain renderTargetView vs ps
+            render deviceContext swapChain renderTargetView vs ps cb
           pump
   in pump
   
 render 
   :: Ptr ID3D11DeviceContext -> Ptr IDxgiSwapChain -> Ptr ID3D11RenderTargetView ->
-     Ptr ID3D11VertexShader -> Ptr ID3D11PixelShader -> IO ()
-render deviceContext swapChain renderTargetView vs ps= do
+     Ptr ID3D11VertexShader -> Ptr ID3D11PixelShader -> Ptr ID3D11Buffer -> IO ()
+render deviceContext swapChain renderTargetView vs ps cb = do
   clearRenderTargetView deviceContext renderTargetView $ Color 0.0 0.125 0.3 1.0
+ 
+  let world = identity4 :: Matrix4
+  let view = identity4 :: Matrix4
+  let projection = identity4 :: Matrix4
+  let cbData = ConstantBuffer world view projection
+  
+  updateSubresource deviceContext cb 0 Nothing cbData 0 0
   
   vsSetShader deviceContext vs []
+  vsSetConstantBuffers deviceContext 0 [cb]
   psSetShader deviceContext ps []
-  draw deviceContext 3 0
+  
+  drawIndexed deviceContext 36 0 0
   
   present swapChain 0 0
   return ()

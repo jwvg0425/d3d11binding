@@ -195,8 +195,9 @@ pokeCString ptr str = go ptr str 0
 instance Storable D3D11InputElementDesc where
   sizeOf _ = 32
   alignment _ = 8
-  poke ptr desc = alloca $ \(namePtr :: CString) -> do
-    pokeCString namePtr (semanticName desc)
+  poke ptr desc = do
+    -- TODO : free namePtr
+    namePtr <- newCString (semanticName desc)
     pokeByteOff ptr 0 namePtr
     pokeByteOff ptr 8 (semanticIndex desc)
     pokeByteOff ptr 12 (inputElementFormat desc)
@@ -244,6 +245,21 @@ data D3D11BufferDesc = D3D11BufferDesc
   
 instance CStorable D3D11BufferDesc
 instance Storable D3D11BufferDesc where
+  sizeOf = cSizeOf
+  alignment = cAlignment
+  poke = cPoke
+  peek = cPeek
+
+data D3D11Box = D3D11Box
+  { left :: Word32
+  , top :: Word32
+  , front :: Word32
+  , right :: Word32
+  , bottom :: Word32
+  , back :: Word32 } deriving (Generic)
+
+instance CStorable D3D11Box
+instance Storable D3D11Box where
   sizeOf = cSizeOf
   alignment = cAlignment
   poke = cPoke

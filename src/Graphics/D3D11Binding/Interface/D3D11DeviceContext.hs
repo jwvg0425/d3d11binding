@@ -14,6 +14,7 @@ import Graphics.D3D11Binding.Utils
 
 import Graphics.D3D11Binding.Interface.Unknown
 import Graphics.D3D11Binding.Interface.D3D11Buffer
+import Graphics.D3D11Binding.Interface.D3D11Resource
 import Graphics.D3D11Binding.Interface.D3D11RenderTargetView
 import Graphics.D3D11Binding.Interface.D3D11DepthStencilView
 import Graphics.D3D11Binding.Interface.D3D11InputLayout
@@ -51,6 +52,15 @@ foreign import stdcall "PSSetShader" c_psSetShader
 
 foreign import stdcall "Draw" c_draw
   :: Ptr ID3D11DeviceContext -> Word32 -> Word32 -> IO ()
+  
+foreign import stdcall "UpdateSubresource" c_updateSubresource
+  :: Ptr ID3D11DeviceContext -> Ptr ID3D11Resource -> Word32 -> Ptr D3D11Box -> Ptr () -> Word32 -> Word32 -> IO ()
+
+foreign import stdcall "VSSetConstantBuffers" c_vsSetConstantBuffers
+  :: Ptr ID3D11DeviceContext -> Word32 -> Word32 -> Ptr (Ptr ID3D11Buffer) -> IO ()
+
+foreign import stdcall "DrawIndexed" c_drawIndexed
+  :: Ptr ID3D11DeviceContext -> Word32 -> Word32 -> Word32 -> IO ()
 
 class (UnknownInterface interface) => D3D11DeviceContextInterface interface where
   omSetRenderTargets :: Ptr interface -> [Ptr ID3D11RenderTargetView] -> Ptr ID3D11DepthStencilView -> IO ()
@@ -90,12 +100,26 @@ class (UnknownInterface interface) => D3D11DeviceContextInterface interface wher
   vsSetShader ptr vertexShader classInstances = maybePokeArray classInstances $ \pClassInstances -> do
     let classInstanceNum = fromIntegral $ length classInstances
     c_vsSetShader (castPtr ptr) vertexShader pClassInstances classInstanceNum
+  vsSetConstantBuffers :: Ptr interface -> Word32 -> [Ptr ID3D11Buffer] -> IO ()
+  vsSetConstantBuffers ptr startSlot buffers = alloca $ \pBuffer -> do
+    pokeArray pBuffer buffers
+    c_vsSetConstantBuffers (castPtr ptr) startSlot (fromIntegral $ length buffers) pBuffer
   psSetShader :: Ptr interface -> Ptr ID3D11PixelShader -> [Ptr ID3D11ClassInstance] -> IO ()
   psSetShader ptr pixelShader classInstances = maybePokeArray classInstances $ \pClassInstances -> do
     let classInstanceNum = fromIntegral $ length classInstances
     c_psSetShader (castPtr ptr) pixelShader pClassInstances classInstanceNum
   draw :: Ptr interface -> Word32 -> Word32 -> IO ()
   draw ptr vertexCount startVertexLocation = c_draw (castPtr ptr) vertexCount startVertexLocation
+  drawIndexed :: Ptr interface -> Word32 -> Word32 -> Word32 -> IO ()
+  drawIndexed ptr indexCount startIndexLocation baseVertexLocation =
+    c_drawIndexed (castPtr ptr) indexCount startIndexLocation baseVertexLocation
+  updateSubresource :: 
+    (D3D11ResourceInterface resource, Storable store) => 
+    Ptr interface -> Ptr resource -> Word32 -> Maybe D3D11Box -> store -> Word32 -> Word32 -> IO ()
+  updateSubresource ptr dstResource dstSubresource dstBox srcData srcRowPitch srcDepthPitch = 
+    maybePoke dstBox $ \pDstBox -> alloca $ \pSrcData -> do
+      poke pSrcData srcData
+      c_updateSubresource (castPtr ptr) (castPtr dstResource) dstSubresource pDstBox (castPtr pSrcData) srcRowPitch srcDepthPitch
 
 data ID3D11DeviceContext = ID3D11DeviceContext
 

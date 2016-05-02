@@ -170,3 +170,33 @@ void IASetIndexBuffer(
 {
   This->lpVtbl->IASetIndexBuffer(This, pIndexBuffer, Format, Offset);  
 }
+
+void UpdateSubresource(
+  ID3D11DeviceContext* This,
+  ID3D11Resource *pDstResource, 
+  UINT DstSubresource,
+  const D3D11_BOX *pDstBox,
+  const void *pSrcData,
+  UINT SrcRowPitch,
+  UINT SrcDepthPitch)
+{
+  This->lpVtbl->UpdateSubresource(This, pDstResource, DstSubresource, pDstBox, pSrcData, SrcRowPitch, SrcDepthPitch);
+}
+
+void VSSetConstantBuffers(
+  ID3D11DeviceContext* This,
+  UINT StartSlot,
+  UINT NumBuffers,
+  ID3D11Buffer *const *ppConstantBuffers)
+{
+  This->lpVtbl->VSSetConstantBuffers(This, StartSlot, NumBuffers, ppConstantBuffers);
+}
+
+void DrawIndexed(
+  ID3D11DeviceContext* This,
+  UINT IndexCount,
+  UINT StartIndexLocation,
+  INT BaseVertexLocation)
+{
+  This->lpVtbl->DrawIndexed(This, IndexCount, StartIndexLocation, BaseVertexLocation);
+}

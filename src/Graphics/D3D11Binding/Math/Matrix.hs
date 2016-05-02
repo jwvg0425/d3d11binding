@@ -13,6 +13,9 @@ matrix4 = matrix 4 4
 
 matrix4FromList = fromList 4 4
 
+identity4 :: (Num a) => Matrix a
+identity4 = identity 4
+
 instance (Storable m) => Storable (Matrix m) where
   sizeOf _ = 64
   alignment _ = 8
