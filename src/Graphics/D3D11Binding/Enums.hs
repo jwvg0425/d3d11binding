@@ -404,3 +404,14 @@ instance CStorable D3D11BindFlag where
 
 d3d11BindFlags :: [D3D11BindFlag] -> Word32
 d3d11BindFlags flags = fromIntegral $ foldl (\acc x -> acc .|. (fromEnum x)) 0 flags
+
+data D3D11PrimitiveTopology = D3D11PrimitiveTopologyUndefined
+                            | D3D11PrimitiveTopologyTrianglelist
+                            deriving (Eq, Show)
+                            
+instance Enum D3D11PrimitiveTopology where
+  fromEnum D3D11PrimitiveTopologyUndefined = 0
+  fromEnum D3D11PrimitiveTopologyTrianglelist = 4
+  toEnum 0 = D3D11PrimitiveTopologyUndefined
+  toEnum 4 = D3D11PrimitiveTopologyTrianglelist
+  toEnum unmatched = error ("D3D11PrimitiveTopology.toEnum: cannot match " ++ show unmatched)

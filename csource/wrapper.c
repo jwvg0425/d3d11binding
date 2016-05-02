@@ -128,3 +128,10 @@ void IASetVertexBuffers(
 {
   This->lpVtbl->IASetVertexBuffers(This, StartSlot, NumBuffers, ppVertexBuffers, pStrides, pOffsets);
 }
+
+void IASetPrimitiveTopology( 
+  ID3D11DeviceContext* This,
+  D3D11_PRIMITIVE_TOPOLOGY Topology)
+{
+  This->lpVtbl->IASetPrimitiveTopology(This, Topology);
+}
