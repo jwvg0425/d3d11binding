@@ -22,3 +22,9 @@ instance (Storable m) => Storable (Matrix m) where
   poke ptr mat = do
     let list = toList mat
     pokeArray (castPtr ptr) list
+    
+instance (Storable m) => CStorable (Matrix m) where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke

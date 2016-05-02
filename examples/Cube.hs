@@ -32,8 +32,22 @@ instance Storable SimpleVertex where
   alignment = cAlignment
   poke = cPoke
   peek = cPeek
-
+  
 instance HasSubresourceData SimpleVertex
+
+data ConstantBuffer = ConstantBuffer 
+ { world :: Matrix4
+ , view :: Matrix4
+ , projection :: Matrix4 } deriving (Generic)
+
+instance CStorable ConstantBuffer
+instance Storable ConstantBuffer where
+  sizeOf = cSizeOf
+  alignment = cAlignment
+  poke = cPoke
+  peek = cPeek
+
+instance HasSubresourceData ConstantBuffer
 
 instance HasSubresourceData Word32
 
@@ -136,6 +150,16 @@ main = do
       iaSetIndexBuffer deviceContext indexBuffer DxgiFormatR16Uint 0
       iaSetPrimitiveTopology deviceContext D3D11PrimitiveTopologyTrianglelist
       return (indexBuffer, pixelShader)
+    
+    let constantBd = D3D11BufferDesc
+                { byteWidth = fromIntegral $ sizeOf (undefined :: ConstantBuffer)
+                , usage = D3D11UsageDefault
+                , bindFlags = d3d11BindFlags [D3D11BindConstantBuffer]
+                , cpuAccessFlags = 0
+                , miscFlags = 0
+                , structureByteStride = 0 }
+    
+    Right cb <- createBuffer device constantBd ([] :: [ConstantBuffer])
     
     use il $ \inputLayout -> use vs $ \vertexShader -> use idb $ \ indexBuffer -> use ps $ \pixelShader -> do
       messagePump hWnd deviceContext swapChain renderTargetView vertexShader pixelShader

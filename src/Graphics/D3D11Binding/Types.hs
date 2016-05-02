@@ -229,6 +229,7 @@ instance Storable D3D11SubresourceData where
 
 class (Storable dataType) => HasSubresourceData dataType where
   getSubresourceData :: [dataType] -> IO D3D11SubresourceData
+  getSubresourceData [] = return $ D3D11SubresourceData nullPtr (fromIntegral 0) (fromIntegral 0)
   getSubresourceData dat = alloca $ \pData -> do
     pokeArray pData dat
     return $ D3D11SubresourceData (castPtr pData) (fromIntegral 0) (fromIntegral 0)
