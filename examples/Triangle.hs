@@ -22,7 +22,7 @@ main :: IO ()
 main = do
   hWnd <- createDefaultWindow 800 600 wndProc
   useDevice hWnd $ \swapChain device deviceContext renderTargetView -> do
-    vb <- compileShaderFromFile "fx/HelloWorld.fx" "VS" "vs_4_0"
+    vb <- compileShaderFromFile "fx/Triangle.fx" "VS" "vs_4_0"
     (il, vs) <- use vb $ \vsBlob -> do
       pointer <- getBufferPointer vsBlob
       size <- getBufferSize vsBlob
@@ -47,7 +47,7 @@ main = do
       iaSetInputLayout deviceContext inputLayout
       return (inputLayout, vertexShader)
     
-    pb <- compileShaderFromFile "fx/HelloWorld.fx" "PS" "ps_4_0"
+    pb <- compileShaderFromFile "fx/Triangle.fx" "PS" "ps_4_0"
     ps <- use pb $ \psBlob -> do
       pointer <- getBufferPointer psBlob
       size <- getBufferSize psBlob
@@ -138,7 +138,7 @@ compileShaderFromFile fileName entryPoint shaderModel = do
 
 createDefaultWindow :: Int -> Int -> WindowClosure -> IO HWND
 createDefaultWindow width height wndProc = do
-  let winClass = mkClassName "HelloWorld"
+  let winClass = mkClassName "Triangle"
   icon         <- loadIcon   Nothing iDI_APPLICATION
   cursor       <- loadCursor Nothing iDC_ARROW
   bgBrush      <- createSolidBrush (rgb 255 255 255)
