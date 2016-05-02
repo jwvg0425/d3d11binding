@@ -135,3 +135,29 @@ void IASetPrimitiveTopology(
 {
   This->lpVtbl->IASetPrimitiveTopology(This, Topology);
 }
+
+void VSSetShader(
+  ID3D11DeviceContext* This,
+  ID3D11VertexShader *pVertexShader,
+  ID3D11ClassInstance *const *ppClassInstances,
+  UINT NumClassInstances)
+{
+  return This->lpVtbl->VSSetShader(This, pVertexShader, ppClassInstances, NumClassInstances);
+}
+
+void PSSetShader(
+  ID3D11DeviceContext* This,
+  ID3D11PixelShader *pPixelShader,
+  ID3D11ClassInstance *const *ppClassInstances,
+  UINT NumClassInstances)
+{
+  return This->lpVtbl->PSSetShader(This, pPixelShader, ppClassInstances, NumClassInstances);
+}
+
+void Draw( 
+  ID3D11DeviceContext* This,
+  UINT VertexCount,
+  UINT StartVertexLocation)
+{
+  This->lpVtbl->Draw(This, VertexCount, StartVertexLocation); 
+}

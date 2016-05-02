@@ -75,7 +75,7 @@ main = do
       return pixelShader
     
     use vs $ \vertexShader -> use ps $ \pixelShader -> do
-      messagePump hWnd deviceContext swapChain renderTargetView
+      messagePump hWnd deviceContext swapChain renderTargetView vertexShader pixelShader
 
 useDevice hWnd proc = do
   (s, d, dc, r) <- initDevice hWnd
@@ -172,8 +172,11 @@ pM_NOREMOVE = 0x0000
 pM_REMOVE = 0x0001
 pM_NOYIELD = 0x0002
 
-messagePump :: HWND -> Ptr ID3D11DeviceContext -> Ptr IDxgiSwapChain -> Ptr ID3D11RenderTargetView -> IO ()
-messagePump hwnd deviceContext swapChain renderTargetView = Graphics.Win32.allocaMessage $ \ msg ->
+messagePump 
+  :: HWND -> Ptr ID3D11DeviceContext -> 
+     Ptr IDxgiSwapChain -> Ptr ID3D11RenderTargetView ->
+     Ptr ID3D11VertexShader -> Ptr ID3D11PixelShader -> IO ()
+messagePump hwnd deviceContext swapChain renderTargetView vs ps = Graphics.Win32.allocaMessage $ \ msg ->
   let pump = do
         m <- peekByteOff msg 4 :: IO WindowMessage
         when (m /= wM_QUIT) $ do
@@ -184,12 +187,19 @@ messagePump hwnd deviceContext swapChain renderTargetView = Graphics.Win32.alloc
             dispatchMessage msg
             return ()
           else do
-            render deviceContext swapChain renderTargetView
+            render deviceContext swapChain renderTargetView vs ps
           pump
   in pump
   
-render :: Ptr ID3D11DeviceContext -> Ptr IDxgiSwapChain -> Ptr ID3D11RenderTargetView -> IO ()
-render deviceContext swapChain renderTargetView = do
+render 
+  :: Ptr ID3D11DeviceContext -> Ptr IDxgiSwapChain -> Ptr ID3D11RenderTargetView ->
+     Ptr ID3D11VertexShader -> Ptr ID3D11PixelShader -> IO ()
+render deviceContext swapChain renderTargetView vs ps= do
   clearRenderTargetView deviceContext renderTargetView $ Color 0.0 0.125 0.3 1.0
+  
+  vsSetShader deviceContext vs []
+  psSetShader deviceContext ps []
+  draw deviceContext 3 0
+  
   present swapChain 0 0
   return ()

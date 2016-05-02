@@ -7,13 +7,20 @@ import Foreign.Marshal.Array
 import Foreign.Ptr
 
 import Graphics.Win32
+
 import Graphics.D3D11Binding.Enums
 import Graphics.D3D11Binding.Types
+import Graphics.D3D11Binding.Utils
+
 import Graphics.D3D11Binding.Interface.Unknown
 import Graphics.D3D11Binding.Interface.D3D11Buffer
 import Graphics.D3D11Binding.Interface.D3D11RenderTargetView
 import Graphics.D3D11Binding.Interface.D3D11DepthStencilView
 import Graphics.D3D11Binding.Interface.D3D11InputLayout
+import Graphics.D3D11Binding.Interface.D3D11ClassInstance
+
+import Graphics.D3D11Binding.Shader.D3D11VertexShader
+import Graphics.D3D11Binding.Shader.D3D11PixelShader
 
 foreign import stdcall "OMSetRenderTargets" c_omSetRenderTargets
   :: Ptr ID3D11DeviceContext -> Word32 -> Ptr (Ptr ID3D11RenderTargetView) -> Ptr ID3D11DepthStencilView -> IO ()
@@ -32,6 +39,15 @@ foreign import stdcall "IASetVertexBuffers" c_iaSetVertexBuffers
 
 foreign import stdcall "IASetPrimitiveTopology" c_iaSetPrimitiveTopology
   :: Ptr ID3D11DeviceContext -> Word32 -> IO ()
+  
+foreign import stdcall "VSSetShader" c_vsSetShader
+  :: Ptr ID3D11DeviceContext -> Ptr ID3D11VertexShader -> Ptr (Ptr ID3D11ClassInstance) -> Word32 -> IO () 
+  
+foreign import stdcall "PSSetShader" c_psSetShader
+  :: Ptr ID3D11DeviceContext -> Ptr ID3D11PixelShader -> Ptr (Ptr ID3D11ClassInstance) -> Word32 -> IO () 
+
+foreign import stdcall "Draw" c_draw
+  :: Ptr ID3D11DeviceContext -> Word32 -> Word32 -> IO ()
 
 class (UnknownInterface interface) => D3D11DeviceContextInterface interface where
   omSetRenderTargets :: Ptr interface -> [Ptr ID3D11RenderTargetView] -> Ptr ID3D11DepthStencilView -> IO ()
@@ -65,6 +81,16 @@ class (UnknownInterface interface) => D3D11DeviceContextInterface interface wher
     c_clearRenderTargetView (castPtr ptr) renderTargetView (castPtr pColor)
   clearState :: Ptr interface -> IO ()
   clearState ptr = c_clearState (castPtr ptr)
+  vsSetShader :: Ptr interface -> Ptr ID3D11VertexShader -> [Ptr ID3D11ClassInstance] -> IO ()
+  vsSetShader ptr vertexShader classInstances = maybePokeArray classInstances $ \pClassInstances -> do
+    let classInstanceNum = fromIntegral $ length classInstances
+    c_vsSetShader (castPtr ptr) vertexShader pClassInstances classInstanceNum
+  psSetShader :: Ptr interface -> Ptr ID3D11PixelShader -> [Ptr ID3D11ClassInstance] -> IO ()
+  psSetShader ptr pixelShader classInstances = maybePokeArray classInstances $ \pClassInstances -> do
+    let classInstanceNum = fromIntegral $ length classInstances
+    c_psSetShader (castPtr ptr) pixelShader pClassInstances classInstanceNum
+  draw :: Ptr interface -> Word32 -> Word32 -> IO ()
+  draw ptr vertexCount startVertexLocation = c_draw (castPtr ptr) vertexCount startVertexLocation
 
 data ID3D11DeviceContext = ID3D11DeviceContext
 
