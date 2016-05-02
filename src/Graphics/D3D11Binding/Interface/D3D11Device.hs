@@ -18,12 +18,16 @@ import Graphics.D3D11Binding.Interface.D3D11ClassLinkage
 import Graphics.D3D11Binding.Interface.D3D11InputLayout
 
 import Graphics.D3D11Binding.Shader.D3D11VertexShader
+import Graphics.D3D11Binding.Shader.D3D11PixelShader
 
 foreign import stdcall "CreateRenderTargetView" c_createRenderTargetView
   :: Ptr ID3D11Device -> Ptr ID3D11Resource -> Ptr D3D11RenderTargetViewDesc -> Ptr (Ptr ID3D11RenderTargetView) -> IO HRESULT
 
 foreign import stdcall "CreateVertexShader" c_createVertexShader
   :: Ptr ID3D11Device -> Ptr () -> Word32 -> Ptr ID3D11ClassLinkage -> Ptr (Ptr ID3D11VertexShader) -> IO HRESULT
+  
+foreign import stdcall "CreatePixelShader" c_createPixelShader
+  :: Ptr ID3D11Device -> Ptr () -> Word32 -> Ptr ID3D11ClassLinkage -> Ptr (Ptr ID3D11PixelShader) -> IO HRESULT
 
 foreign import stdcall "CreateInputLayout" c_createInputLayout
   :: Ptr ID3D11Device -> Ptr D3D11InputElementDesc -> Word32 -> Ptr () -> Word32 -> Ptr (Ptr ID3D11InputLayout) -> IO HRESULT
@@ -41,6 +45,13 @@ class (UnknownInterface interface) => D3D11DeviceInterface interface where
   createVertexShader this shaderByteCode bytecodeLength pClassLinkage = alloca $ \ppVertexShader -> do
     hr <- c_createVertexShader (castPtr this) shaderByteCode bytecodeLength pClassLinkage ppVertexShader
     if hr < 0 then return (Left hr) else Right <$> peek ppVertexShader
+  
+  createPixelShader 
+    :: Ptr interface -> Ptr () -> Word32 -> Ptr ID3D11ClassLinkage -> IO (Either HRESULT (Ptr ID3D11PixelShader))
+  createPixelShader this shaderByteCode bytecodeLength pClassLinkage = alloca $ \ppPixelShader -> do
+    hr <- c_createPixelShader (castPtr this) shaderByteCode bytecodeLength pClassLinkage ppPixelShader
+    if hr < 0 then return (Left hr) else Right <$> peek ppPixelShader
+  
   createInputLayout
     :: Ptr interface -> [D3D11InputElementDesc] -> Ptr () -> Word32 -> IO (Either HRESULT (Ptr ID3D11InputLayout))
   createInputLayout this inputElementDescs shaderByteCode bytecodeLength =

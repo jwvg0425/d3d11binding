@@ -81,6 +81,16 @@ HRESULT CreateVertexShader(
     return This->lpVtbl->CreateVertexShader(This, pShaderBytecode, BytecodeLength, pClassLinkage, ppVertexShader);
 }
 
+HRESULT STDMETHODCALLTYPE CreatePixelShader( 
+  ID3D11Device* This,
+  const void *pShaderBytecode,
+  SIZE_T BytecodeLength,
+  ID3D11ClassLinkage *pClassLinkage,
+  ID3D11PixelShader **ppPixelShader)
+{
+    return This->lpVtbl->CreatePixelShader(This, pShaderBytecode, BytecodeLength, pClassLinkage, ppPixelShader);
+}
+
 HRESULT CreateInputLayout( 
   ID3D11Device* This,
   const D3D11_INPUT_ELEMENT_DESC* pInputElementDescs,

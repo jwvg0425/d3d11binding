@@ -44,8 +44,20 @@ main = do
                               pointer
                               size
       iaSetInputLayout deviceContext inputLayout
+    
+    pb <- compileShaderFromFile "fx/HelloWorld.fx" "PS" "ps_4_0"
+    use pb $ \psBlob -> do
+      pointer <- getBufferPointer psBlob
+      size <- getBufferSize psBlob
+      Right pixelShader <- createPixelShader
+                            device
+                            pointer
+                            size
+                            nullPtr
       
-      messagePump hWnd deviceContext swapChain renderTargetView
+      return ()
+    
+    messagePump hWnd deviceContext swapChain renderTargetView
 
 useDevice hWnd proc = do
   (s, d, dc, r) <- initDevice hWnd

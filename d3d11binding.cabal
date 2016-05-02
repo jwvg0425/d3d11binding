@@ -32,6 +32,7 @@ library
     Graphics.D3D11Binding.Interface.D3D11DepthStencilView
     Graphics.D3D11Binding.Interface.D3D11Device
     Graphics.D3D11Binding.Interface.D3D11DeviceContext
+    Graphics.D3D11Binding.Interface.D3D11InputLayout
     Graphics.D3D11Binding.Interface.D3D11RenderTargetView
     Graphics.D3D11Binding.Interface.D3D11Resource
     Graphics.D3D11Binding.Interface.D3DBlob
@@ -47,6 +48,7 @@ library
     
     Graphics.D3D11Binding.Shader.Compile
     
+    Graphics.D3D11Binding.Shader.D3D11PixelShader
     Graphics.D3D11Binding.Shader.D3D11VertexShader
     
     Graphics.D3D11Binding.Shader.Flags
