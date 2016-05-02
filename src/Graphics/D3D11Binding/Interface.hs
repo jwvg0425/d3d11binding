@@ -1,5 +1,6 @@
 module Graphics.D3D11Binding.Interface 
-( module Graphics.D3D11Binding.Interface.D3D11ClassLinkage
+( module Graphics.D3D11Binding.Interface.D3D11Buffer
+, module Graphics.D3D11Binding.Interface.D3D11ClassLinkage
 , module Graphics.D3D11Binding.Interface.D3D11DepthStencilView
 , module Graphics.D3D11Binding.Interface.D3D11Device
 , module Graphics.D3D11Binding.Interface.D3D11DeviceContext
@@ -17,6 +18,7 @@ module Graphics.D3D11Binding.Interface
 , module Graphics.D3D11Binding.Interface.Unknown
 ) where
 
+import Graphics.D3D11Binding.Interface.D3D11Buffer
 import Graphics.D3D11Binding.Interface.D3D11ClassLinkage
 import Graphics.D3D11Binding.Interface.D3D11DepthStencilView
 import Graphics.D3D11Binding.Interface.D3D11Device

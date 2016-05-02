@@ -81,7 +81,7 @@ HRESULT CreateVertexShader(
     return This->lpVtbl->CreateVertexShader(This, pShaderBytecode, BytecodeLength, pClassLinkage, ppVertexShader);
 }
 
-HRESULT STDMETHODCALLTYPE CreatePixelShader( 
+HRESULT CreatePixelShader( 
   ID3D11Device* This,
   const void *pShaderBytecode,
   SIZE_T BytecodeLength,
@@ -102,9 +102,18 @@ HRESULT CreateInputLayout(
   return This->lpVtbl->CreateInputLayout(This, pInputElementDescs, NumElements, pShaderBytecodeWithInputSignature, BytecodeLength, ppInputLayout);
 }
 
-void STDMETHODCALLTYPE IASetInputLayout( 
+void IASetInputLayout( 
   ID3D11DeviceContext* This,
   ID3D11InputLayout *pInputLayout)
 {
   return This->lpVtbl->IASetInputLayout(This, pInputLayout);
+}
+
+HRESULT CreateBuffer( 
+  ID3D11Device* This,
+  const D3D11_BUFFER_DESC *pDesc,
+  const D3D11_SUBRESOURCE_DATA *pInitialData,
+  ID3D11Buffer **ppBuffer)
+{
+  return This->lpVtbl->CreateBuffer(This, pDesc, pInitialData, ppBuffer);
 }

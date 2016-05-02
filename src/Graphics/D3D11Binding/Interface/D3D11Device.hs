@@ -12,6 +12,7 @@ import Graphics.D3D11Binding.Types
 import Graphics.D3D11Binding.Utils
 
 import Graphics.D3D11Binding.Interface.Unknown
+import Graphics.D3D11Binding.Interface.D3D11Buffer
 import Graphics.D3D11Binding.Interface.D3D11Resource
 import Graphics.D3D11Binding.Interface.D3D11RenderTargetView
 import Graphics.D3D11Binding.Interface.D3D11ClassLinkage
@@ -31,6 +32,9 @@ foreign import stdcall "CreatePixelShader" c_createPixelShader
 
 foreign import stdcall "CreateInputLayout" c_createInputLayout
   :: Ptr ID3D11Device -> Ptr D3D11InputElementDesc -> Word32 -> Ptr () -> Word32 -> Ptr (Ptr ID3D11InputLayout) -> IO HRESULT
+
+foreign import stdcall "CreateBuffer" c_createBuffer
+  :: Ptr ID3D11Device -> Ptr D3D11BufferDesc -> Ptr D3D11SubresourceData -> Ptr (Ptr ID3D11Buffer) -> IO HRESULT
 
 class (UnknownInterface interface) => D3D11DeviceInterface interface where
   createRenderTargetView
@@ -65,6 +69,16 @@ class (UnknownInterface interface) => D3D11DeviceInterface interface where
               bytecodeLength
               ppInputLayout
       if hr < 0 then return (Left hr) else Right <$> peek ppInputLayout
+        
+  createBuffer 
+    :: (HasSubresourceData resource) => Ptr interface -> D3D11BufferDesc -> [resource] -> IO (Either HRESULT (Ptr ID3D11Buffer))
+  createBuffer this desc resource = 
+    alloca $ \ppBuffer -> alloca $ \pDesc -> alloca $ \pResource -> do
+      poke pDesc desc
+      resource' <- getSubresourceData resource
+      poke pResource resource'
+      hr <- c_createBuffer (castPtr this) pDesc pResource ppBuffer
+      if hr < 0 then return (Left hr) else Right <$> peek ppBuffer
       
 data ID3D11Device = ID3D11Device
 

@@ -8,6 +8,7 @@ import Control.Exception
 import Control.Monad
 
 import Foreign (peekByteOff)
+import Foreign.Storable
 import Foreign.Ptr
 
 import Graphics.Win32
@@ -55,6 +56,19 @@ main = do
                             size
                             nullPtr
       
+      let bd = D3D11BufferDesc
+                { byteWidth = fromIntegral $ 3 * sizeOf (undefined :: Vertex3)
+                , usage = D3D11UsageDefault
+                , bindFlags = d3d11BindFlags [D3D11BindVertexBuffer]
+                , cpuAccessFlags = 0
+                , miscFlags = 0
+                , structureByteStride = 0 }
+      Right buffer <- createBuffer
+                        device
+                        bd
+                        [ Vertex3 0.0 0.5 0.5
+                        , Vertex3 0.5 (-0.5) 0.5
+                        , Vertex3 (-0.5) (-0.5) 0.5 ]
       return ()
     
     messagePump hWnd deviceContext swapChain renderTargetView

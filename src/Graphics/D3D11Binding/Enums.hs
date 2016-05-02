@@ -318,6 +318,7 @@ instance Enum D3D11InputClassification where
   fromEnum D3D11InputPerInstanceData = 1
   toEnum 0 = D3D11InputPerVertexData
   toEnum 1 = D3D11InputPerInstanceData
+  toEnum unmatched = error ("D3D11InputClassification.toEnum: cannot match " ++ show unmatched)
   
 instance Storable D3D11InputClassification where
   sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
@@ -330,3 +331,76 @@ instance CStorable D3D11InputClassification where
   cAlignment = alignment
   cPeek = peek
   cPoke = poke
+  
+data D3D11Usage = D3D11UsageDefault
+                | D3D11UsageImmutable
+                | D3D11UsageDynamic
+                | D3D11UsageStaging
+                deriving (Eq, Show)
+
+instance Enum D3D11Usage where
+  fromEnum D3D11UsageDefault = 0
+  fromEnum D3D11UsageImmutable = 1
+  fromEnum D3D11UsageDynamic = 2
+  fromEnum D3D11UsageStaging = 3
+  toEnum 0 = D3D11UsageDefault
+  toEnum 1 = D3D11UsageImmutable
+  toEnum 2 = D3D11UsageDynamic
+  toEnum 3 = D3D11UsageStaging
+  toEnum unmatched = error ("D3D11Usage.toEnum: cannot match " ++ show unmatched)
+
+instance Storable D3D11Usage where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
+  
+instance CStorable D3D11Usage where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
+
+data D3D11BindFlag = D3D11BindVertexBuffer
+                   | D3D11BindIndexBuffer
+                   | D3D11BindConstantBuffer
+                   | D3D11BindShaderResource
+                   | D3D11BindStreamOutput
+                   | D3D11BindRenderTarget
+                   | D3D11BindDepthStencil
+                   | D3D11BindUnorderedAccess
+                   deriving (Eq, Show)
+                   
+instance Enum D3D11BindFlag where
+  fromEnum D3D11BindVertexBuffer = 0x1
+  fromEnum D3D11BindIndexBuffer = 0x2
+  fromEnum D3D11BindConstantBuffer = 0x4
+  fromEnum D3D11BindShaderResource = 0x8
+  fromEnum D3D11BindStreamOutput = 0x10
+  fromEnum D3D11BindRenderTarget = 0x20
+  fromEnum D3D11BindDepthStencil = 0x40
+  fromEnum D3D11BindUnorderedAccess = 0x80
+  toEnum 0x1 = D3D11BindVertexBuffer
+  toEnum 0x2 = D3D11BindIndexBuffer
+  toEnum 0x4 = D3D11BindConstantBuffer
+  toEnum 0x8 = D3D11BindShaderResource
+  toEnum 0x10 = D3D11BindStreamOutput
+  toEnum 0x20 = D3D11BindRenderTarget
+  toEnum 0x40 = D3D11BindDepthStencil
+  toEnum 0x80 = D3D11BindUnorderedAccess
+  toEnum unmatched = error ("D3D11BindFlag.toEnum: cannot match " ++ show unmatched)
+
+instance Storable D3D11BindFlag where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
+  
+instance CStorable D3D11BindFlag where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
+
+d3d11BindFlags :: [D3D11BindFlag] -> Word32
+d3d11BindFlags flags = fromIntegral $ foldl (\acc x -> acc .|. (fromEnum x)) 0 flags

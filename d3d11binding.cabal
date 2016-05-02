@@ -28,6 +28,7 @@ library
     Graphics.D3D11Binding.Types
     Graphics.D3D11Binding.Interface
     
+    Graphics.D3D11Binding.Interface.D3D11Buffer
     Graphics.D3D11Binding.Interface.D3D11ClassLinkage
     Graphics.D3D11Binding.Interface.D3D11DepthStencilView
     Graphics.D3D11Binding.Interface.D3D11Device
