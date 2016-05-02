@@ -134,8 +134,10 @@ data DxgiFormat = DxgiFormatUnknown
 
 instance Enum DxgiFormat where
   fromEnum DxgiFormatUnknown = 0
+  fromEnum DxgiFormatR32G32B32Float = 6
   fromEnum DxgiFormatR8G8B8A8Unorm = 28
   toEnum 0 = DxgiFormatUnknown
+  toEnum 6 = DxgiFormatR32G32B32Float
   toEnum 28 = DxgiFormatR8G8B8A8Unorm
   toEnum unmatched = error ("DxgiFormat.toEnum: cannot match " ++ show unmatched)
 
@@ -302,6 +304,28 @@ instance Storable D3D11RtvDimension where
   poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
   
 instance CStorable D3D11RtvDimension where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
+  
+data D3D11InputClassification = D3D11InputPerVertexData
+                              | D3D11InputPerInstanceData
+                              deriving (Eq, Show)
+
+instance Enum D3D11InputClassification where
+  fromEnum D3D11InputPerVertexData = 0
+  fromEnum D3D11InputPerInstanceData = 1
+  toEnum 0 = D3D11InputPerVertexData
+  toEnum 1 = D3D11InputPerInstanceData
+  
+instance Storable D3D11InputClassification where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
+  
+instance CStorable D3D11InputClassification where
   cSizeOf = sizeOf
   cAlignment = alignment
   cPeek = peek

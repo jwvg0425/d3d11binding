@@ -1,9 +1,15 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module Graphics.D3D11Binding.Types where
 import GHC.Generics (Generic)
 import Data.Word
 import Data.Bits
 import Control.Applicative
+
+import Foreign.Ptr
+import Foreign.C.String
+import Foreign.Marshal.Alloc
+import Foreign.Marshal.Array
 import Foreign.Storable
 import Foreign.CStorable
 
@@ -164,3 +170,47 @@ instance Storable Color where
   alignment = cAlignment
   poke = cPoke
   peek = cPeek
+  
+data D3D11InputElementDesc = D3D11InputElementDesc
+  { semanticName :: String
+  , semanticIndex :: Word32
+  , inputElementFormat :: DxgiFormat
+  , inputSlot :: Word32
+  , alignedByteOffset :: Word32
+  , inputSlotClass :: D3D11InputClassification
+  , instanceDataStepRate :: Word32 } deriving (Generic)
+  
+instance CStorable D3D11InputElementDesc where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPoke = poke
+  cPeek = peek
+
+pokeCString ptr str = go ptr str 0
+  where go ptr [] byte = pokeByteOff ptr byte '\0'
+        go ptr (x:xs) byte = do
+          pokeByteOff ptr byte x
+          go ptr xs (byte+1) 
+
+instance Storable D3D11InputElementDesc where
+  sizeOf _ = 32
+  alignment _ = 8
+  poke ptr desc = alloca $ \(namePtr :: CString) -> do
+    pokeCString namePtr (semanticName desc)
+    pokeByteOff ptr 0 namePtr
+    pokeByteOff ptr 8 (semanticIndex desc)
+    pokeByteOff ptr 12 (inputElementFormat desc)
+    pokeByteOff ptr 16 (inputSlot desc)
+    pokeByteOff ptr 20 (alignedByteOffset desc)
+    pokeByteOff ptr 24 (inputSlotClass desc)
+    pokeByteOff ptr 28 (instanceDataStepRate desc)
+  peek ptr = do
+    namePtr <- peekByteOff ptr 0
+    name <- peekCString namePtr
+    index <- peekByteOff ptr 8
+    elementFormat <- peekByteOff ptr 12
+    slot <- peekByteOff ptr 16
+    byteOffset <- peekByteOff ptr 20
+    slotClass <- peekByteOff ptr 24
+    dataStepRate <- peekByteOff ptr 28
+    return $ D3D11InputElementDesc name index elementFormat slot byteOffset slotClass dataStepRate

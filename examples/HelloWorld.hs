@@ -30,6 +30,18 @@ main = do
                               pointer
                               size
                               nullPtr
+      Right inputLayout <- createInputLayout
+                              device
+                              [D3D11InputElementDesc 
+                                  "POSITION" 
+                                  (fromIntegral 0)
+                                  DxgiFormatR32G32B32Float
+                                  (fromIntegral 0)
+                                  (fromIntegral 0)
+                                  D3D11InputPerVertexData
+                                  (fromIntegral 0)]
+                              pointer
+                              size
                              
       messagePump hWnd deviceContext swapChain renderTargetView
 

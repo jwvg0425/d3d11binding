@@ -80,3 +80,14 @@ HRESULT CreateVertexShader(
 {
     return This->lpVtbl->CreateVertexShader(This, pShaderBytecode, BytecodeLength, pClassLinkage, ppVertexShader);
 }
+
+HRESULT CreateInputLayout( 
+  ID3D11Device* This,
+  const D3D11_INPUT_ELEMENT_DESC* pInputElementDescs,
+  UINT NumElements,
+  const void* pShaderBytecodeWithInputSignature,
+  SIZE_T BytecodeLength,
+  ID3D11InputLayout** ppInputLayout)
+{
+  return This -> lpVtbl->CreateInputLayout(This, pInputElementDescs, NumElements, pShaderBytecodeWithInputSignature, BytecodeLength, ppInputLayout);
+}
