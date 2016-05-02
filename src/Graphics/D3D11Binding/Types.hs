@@ -233,20 +233,6 @@ class (Storable dataType) => HasSubresourceData dataType where
     pokeArray pData dat
     return $ D3D11SubresourceData (castPtr pData) (fromIntegral 0) (fromIntegral 0)
 
-data Vertex3 = Vertex3
-  { x :: Float
-  , y :: Float
-  , z :: Float } deriving (Generic)
-  
-instance CStorable Vertex3
-instance Storable Vertex3 where
-  sizeOf = cSizeOf
-  alignment = cAlignment
-  poke = cPoke
-  peek = cPeek
-
-instance HasSubresourceData Vertex3
-
 data D3D11BufferDesc = D3D11BufferDesc
   { byteWidth :: Word32
   , usage :: D3D11Usage
