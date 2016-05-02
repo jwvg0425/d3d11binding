@@ -69,7 +69,7 @@ main = do
                         [ Vertex3 0.0 0.5 0.5
                         , Vertex3 0.5 (-0.5) 0.5
                         , Vertex3 (-0.5) (-0.5) 0.5 ]
-      return ()
+      iaSetVertexBuffers deviceContext 0 [(buffer, fromIntegral $ sizeOf (undefined :: Vertex3), 0)]
     
     messagePump hWnd deviceContext swapChain renderTargetView
 

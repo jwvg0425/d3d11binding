@@ -9,6 +9,7 @@ import Foreign.Ptr
 import Graphics.Win32
 import Graphics.D3D11Binding.Types
 import Graphics.D3D11Binding.Interface.Unknown
+import Graphics.D3D11Binding.Interface.D3D11Buffer
 import Graphics.D3D11Binding.Interface.D3D11RenderTargetView
 import Graphics.D3D11Binding.Interface.D3D11DepthStencilView
 import Graphics.D3D11Binding.Interface.D3D11InputLayout
@@ -24,6 +25,9 @@ foreign import stdcall "ClearRenderTargetView" c_clearRenderTargetView
   
 foreign import stdcall "IASetInputLayout" c_iaSetInputLayout
   :: Ptr ID3D11DeviceContext -> Ptr ID3D11InputLayout -> IO ()
+  
+foreign import stdcall "IASetVertexBuffers" c_iaSetVertexBuffers
+  :: Ptr ID3D11DeviceContext -> Word32 -> Word32 -> Ptr (Ptr ID3D11Buffer) -> Ptr Word32 -> Ptr Word32 -> IO ()
 
 class (UnknownInterface interface) => D3D11DeviceContextInterface interface where
   omSetRenderTargets :: Ptr interface -> [Ptr ID3D11RenderTargetView] -> Ptr ID3D11DepthStencilView -> IO ()
@@ -36,6 +40,19 @@ class (UnknownInterface interface) => D3D11DeviceContextInterface interface wher
     c_rsSetViewports (castPtr ptr) (fromIntegral $ length viewports) pViewports
   iaSetInputLayout :: Ptr interface -> Ptr ID3D11InputLayout -> IO ()
   iaSetInputLayout ptr inputLayout = c_iaSetInputLayout (castPtr ptr) inputLayout
+  iaSetVertexBuffers :: Ptr interface -> Word32 -> [(Ptr ID3D11Buffer, Word32, Word32)] -> IO ()
+  iaSetVertexBuffers ptr startSlot bufferData = do
+    let buffer = map first bufferData
+    let stride = map second bufferData
+    let offset = map third bufferData
+    alloca $ \pBuffer -> alloca $ \pStride -> alloca $ \pOffset -> do
+      pokeArray pBuffer buffer
+      pokeArray pStride stride
+      pokeArray pOffset offset
+      c_iaSetVertexBuffers (castPtr ptr) startSlot (fromIntegral $ length bufferData) pBuffer pStride pOffset
+    where first (a,_,_) = a
+          second (_,b,_) = b
+          third (_,_,c) = c
   clearRenderTargetView :: Ptr interface -> Ptr ID3D11RenderTargetView -> Color -> IO ()
   clearRenderTargetView ptr renderTargetView color = alloca $ \pColor -> do
     poke pColor color

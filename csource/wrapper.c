@@ -117,3 +117,14 @@ HRESULT CreateBuffer(
 {
   return This->lpVtbl->CreateBuffer(This, pDesc, pInitialData, ppBuffer);
 }
+
+void IASetVertexBuffers( 
+  ID3D11DeviceContext* This,
+  UINT StartSlot,
+  UINT NumBuffers,
+  ID3D11Buffer *const *ppVertexBuffers,
+  const UINT *pStrides,
+  const UINT *pOffsets)
+{
+  This->lpVtbl->IASetVertexBuffers(This, StartSlot, NumBuffers, ppVertexBuffers, pStrides, pOffsets);
+}
