@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                d3d11binding
-version:             0.0.0.4
+version:             0.0.0.5
 synopsis:            A raw binding for the directX 11
 description:         A raw binding for the directX 11   
 homepage:            https://github.com/jwvg0425/d3d11binding

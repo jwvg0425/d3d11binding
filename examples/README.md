@@ -14,3 +14,9 @@ this example needs fx/Triangle.fx HLSL File to run.
 rotate colorful cube example. it describes how to use index buffer & constant buffer, matrix operations.
 
 this example needs fx/Cube.fx HLSL File to run.
+
+# Revolve Cube
+
+![screenshot](images/revolve_cube.gif)
+
+this example describes how to use depth stencil buffer and various transformations.
