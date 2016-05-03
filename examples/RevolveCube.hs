@@ -64,7 +64,7 @@ main :: IO ()
 main = do
   hWnd <- createDefaultWindow windowWidth windowHeight wndProc
   useDevice hWnd $ \swapChain device deviceContext renderTargetView depthStencilView -> do
-    vb <- compileShaderFromFile "fx/Cube.fx" "VS" "vs_4_0"
+    vb <- compileShaderFromFile "fx/RevolveCube.fx" "VS" "vs_4_0"
     (il, vs) <- use vb $ \vsBlob -> do
       pointer <- getBufferPointer vsBlob
       size <- getBufferSize vsBlob
@@ -97,7 +97,7 @@ main = do
       iaSetInputLayout deviceContext inputLayout
       return (inputLayout, vertexShader)
     
-    pb <- compileShaderFromFile "fx/Cube.fx" "PS" "ps_4_0"
+    pb <- compileShaderFromFile "fx/RevolveCube.fx" "PS" "ps_4_0"
     (idb, ps) <- use pb $ \psBlob -> do
       pointer <- getBufferPointer psBlob
       size <- getBufferSize psBlob
@@ -237,7 +237,7 @@ initDevice hWnd = do
   
   Right depthStencilView <- createDepthStencilView device depthStencil (Just descDsv)
             
-  omSetRenderTargets deviceContext [renderTargetView] nullPtr
+  omSetRenderTargets deviceContext [renderTargetView] depthStencilView
   rsSetViewports deviceContext [D3D11Viewport 0 0 windowWidth windowHeight 0 1]
   
   return (swapChain, device, deviceContext, renderTargetView, depthStencilView)

@@ -466,8 +466,8 @@ data D3D11ClearFlag = D3D11ClearDepth
                     deriving (Eq, Show)
                     
 instance Enum D3D11ClearFlag where
-  fromEnum D3D11ClearDepth = 0
-  fromEnum D3D11ClearStencil = 1
-  toEnum 0 = D3D11ClearDepth
-  toEnum 1 = D3D11ClearStencil
+  fromEnum D3D11ClearDepth = 1
+  fromEnum D3D11ClearStencil = 2
+  toEnum 1 = D3D11ClearDepth
+  toEnum 2 = D3D11ClearStencil
   toEnum unmatched = error ("D3D11ClearFlag.toEnum: cannot match " ++ show unmatched)

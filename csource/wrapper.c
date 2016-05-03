@@ -216,7 +216,7 @@ HRESULT CreateDepthStencilView(
   const D3D11_DEPTH_STENCIL_VIEW_DESC *pDesc,
   ID3D11DepthStencilView **ppDepthStencilView)
 {
-    return This->lpVtbl->CreateDepthStencilView(This, pResource, pDesc, ppDepthStencilView);
+  return This->lpVtbl->CreateDepthStencilView(This, pResource, pDesc, ppDepthStencilView);
 }
 
 void ClearDepthStencilView(
