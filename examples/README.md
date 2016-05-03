@@ -9,7 +9,7 @@ this example needs fx/Triangle.fx HLSL File to run.
 
 # Cube
 
-![screenshot](images/cube.png)
+![screenshot](images/cube.gif)
 
 rotate colorful cube example. it describes how to use index buffer & constant buffer, matrix operations.
 
