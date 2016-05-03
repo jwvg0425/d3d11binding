@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                d3d11binding
-version:             0.0.0.3
+version:             0.0.0.4
 synopsis:            A raw binding for the directX 11
 description:         A raw binding for the directX 11   
 homepage:            https://github.com/jwvg0425/d3d11binding
@@ -108,5 +108,6 @@ executable Cube
     d3d11binding,
     c-storable-deriving >= 0.1.3,
     vect >= 0.4.7
+    
   hs-source-dirs: examples
   default-language: Haskell2010

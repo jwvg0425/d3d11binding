@@ -8,6 +8,7 @@ import System.Exit
 import Data.Int
 import Data.Word
 import Data.Vect.Float
+import System.CPUTime
 
 import Control.Exception
 import Control.Monad
@@ -50,12 +51,18 @@ instance Storable ConstantBuffer where
 
 instance HasSubresourceData ConstantBuffer
 
-instance HasSubresourceData Word32
+instance HasSubresourceData Word16
 
+
+windowWidth :: (Num a) => a
+windowWidth = 640
+
+windowHeight :: (Num a) => a
+windowHeight = 480
 
 main :: IO ()
 main = do
-  hWnd <- createDefaultWindow 800 600 wndProc
+  hWnd <- createDefaultWindow windowWidth windowHeight wndProc
   useDevice hWnd $ \swapChain device deviceContext renderTargetView -> do
     vb <- compileShaderFromFile "fx/Cube.fx" "VS" "vs_4_0"
     (il, vs) <- use vb $ \vsBlob -> do
@@ -118,6 +125,7 @@ main = do
                         , SimpleVertex (Vertex3 1.0 (-1.0) (-1.0)) (Color 1.0 1.0 0.0 1.0)
                         , SimpleVertex (Vertex3 1.0 (-1.0) 1.0) (Color 1.0 1.0 1.0 1.0)
                         , SimpleVertex (Vertex3 (-1.0) (-1.0) 1.0) (Color 0.0 0.0 0.0 1.0) ]
+                        
       iaSetVertexBuffers deviceContext 0 [(buffer, fromIntegral $ sizeOf (undefined :: SimpleVertex), 0)]
       
       let indexBd = D3D11BufferDesc
@@ -146,7 +154,7 @@ main = do
                                 3,7,2,
 
                                 6,4,5,
-                                7,4,6 ] :: [Word32])
+                                7,4,6 ] :: [Word16])
       
       iaSetIndexBuffer deviceContext indexBuffer DxgiFormatR16Uint 0
       iaSetPrimitiveTopology deviceContext D3D11PrimitiveTopologyTrianglelist
@@ -179,8 +187,8 @@ wndProc hWnd msg wParam lParam
 initDevice :: HWND -> IO (Ptr IDxgiSwapChain, Ptr ID3D11Device, Ptr ID3D11DeviceContext, Ptr ID3D11RenderTargetView)
 initDevice hWnd = do
   let bd = DxgiModeDesc 
-            800 
-            600 
+            windowWidth 
+            windowHeight 
             (DxgiRational 60 1) 
             DxgiFormatR8G8B8A8Unorm 
             DxgiModeScanlineOrderUnspecified 
@@ -208,7 +216,7 @@ initDevice hWnd = do
   Right renderTargetView <- use backBuffer $ \b -> createRenderTargetView device b Nothing
   
   omSetRenderTargets deviceContext [renderTargetView] nullPtr
-  rsSetViewports deviceContext [D3D11Viewport 0 0 800 600 0 1]
+  rsSetViewports deviceContext [D3D11Viewport 0 0 windowWidth windowHeight 0 1]
   
   return (swapChain, device, deviceContext, renderTargetView)
 
@@ -285,13 +293,16 @@ render
      Ptr ID3D11VertexShader -> Ptr ID3D11PixelShader -> Ptr ID3D11Buffer -> IO ()
 render deviceContext swapChain renderTargetView vs ps cb = do
   clearRenderTargetView deviceContext renderTargetView $ Color 0.0 0.125 0.3 1.0
- 
+  
+  t <- getCPUTime
+  let d = (fromIntegral t) / 1000000000000
+  
   let eye = Vec3 0.0 1.0 (-5.0)
   let at = Vec3 0.0 1.0 0.0
   let up = Vec3 0.0 1.0 0.0
-  let world = idmtx
+  let world = rotationY d
   let view = lookAtLH eye at up
-  let projection = perspectiveFovLH (pi / 2) (800 / 600) 0.01 100
+  let projection = perspectiveFovLH (pi / 2) (windowWidth / windowHeight) 0.01 100
   let cbData = ConstantBuffer (transpose world) (transpose view) (transpose projection)
   
   updateSubresource deviceContext cb 0 Nothing cbData 0 0

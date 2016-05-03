@@ -42,3 +42,12 @@ perspectiveFovLH fovAngleY aspectRatio nearZ farZ = m
                  (Vec4 0 height 0 0)
                  (Vec4 0 0 rate 1.0)
                  (Vec4 0 0 ((-rate)*nearZ) 0)
+                 
+rotationY :: Float -> Mat4
+rotationY angle = m
+  where sinAngle = sin angle
+        cosAngle = cos angle
+        m = Mat4 (Vec4 cosAngle 0 (-sinAngle) 0)
+                 (Vec4 0 1 0 0)
+                 (Vec4 sinAngle 0 cosAngle 0)
+                 (Vec4 0 0 0 1)
