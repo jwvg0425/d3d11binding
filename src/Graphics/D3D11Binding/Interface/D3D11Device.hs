@@ -75,12 +75,12 @@ class (UnknownInterface interface) => D3D11DeviceInterface interface where
   createBuffer this desc resource = 
     alloca $ \ppBuffer -> alloca $ \pDesc -> do
       poke pDesc desc
-      resource' <- getSubresourceData resource
-      if pSysMem resource' == nullPtr 
+      if null resource
       then do
         hr <- c_createBuffer (castPtr this) pDesc nullPtr ppBuffer
         if hr < 0 then return (Left hr) else Right <$> peek ppBuffer
       else alloca $ \pResource -> do
+        resource' <- getSubresourceData resource
         poke pResource resource'
         hr <- c_createBuffer (castPtr this) pDesc pResource ppBuffer
         if hr < 0 then return (Left hr) else Right <$> peek ppBuffer
