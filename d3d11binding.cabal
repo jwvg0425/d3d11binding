@@ -14,7 +14,7 @@ maintainer:          jwvg0425@naver.com
 -- copyright:           
 category:            Graphics
 build-type:          Simple
-extra-source-files:  README.md
+extra-source-files:
 cabal-version:       >=1.10
 
 Source-Repository HEAD
@@ -40,11 +40,11 @@ library
     Graphics.D3D11Binding.Interface.D3D11Resource
     Graphics.D3D11Binding.Interface.D3DBlob
     Graphics.D3D11Binding.Interface.D3DInclude
+    Graphics.D3D11Binding.Interface.D3D11Texture2D
     
     Graphics.D3D11Binding.Interface.DxgiAdapter
     Graphics.D3D11Binding.Interface.DxgiSwapChain
     
-    Graphics.D3D11Binding.Interface.Texture2D
     Graphics.D3D11Binding.Interface.Unknown
     
     Graphics.D3D11Binding.Shader
@@ -100,6 +100,20 @@ executable Triangle
   
 executable Cube
   main-is: Cube.hs
+  -- other-modules:
+  -- other-extensions:
+  build-depends:
+    base >= 4.8 && < 5,
+    Win32 >= 2.3.0.0,
+    d3d11binding,
+    c-storable-deriving >= 0.1.3,
+    vect >= 0.4.7
+    
+  hs-source-dirs: examples
+  default-language: Haskell2010
+  
+executable RevolveCube
+  main-is: RevolveCube.hs
   -- other-modules:
   -- other-extensions:
   build-depends:

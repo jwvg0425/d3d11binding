@@ -1,5 +1,8 @@
-module Graphics.D3D11Binding.Interface.Texture2D where
+module Graphics.D3D11Binding.Interface.D3D11Texture2D where
   
+import Foreign.Ptr
+
+import Graphics.D3D11Binding.Types
 import Graphics.D3D11Binding.GUID
 import Graphics.D3D11Binding.Interface.Unknown
 import Graphics.D3D11Binding.Interface.D3D11Resource

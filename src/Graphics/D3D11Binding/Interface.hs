@@ -9,11 +9,10 @@ module Graphics.D3D11Binding.Interface
 , module Graphics.D3D11Binding.Interface.D3D11Resource
 , module Graphics.D3D11Binding.Interface.D3DBlob
 , module Graphics.D3D11Binding.Interface.D3DInclude
+, module Graphics.D3D11Binding.Interface.D3D11Texture2D
 
 , module Graphics.D3D11Binding.Interface.DxgiAdapter
 , module Graphics.D3D11Binding.Interface.DxgiSwapChain
-
-, module Graphics.D3D11Binding.Interface.Texture2D
 
 , module Graphics.D3D11Binding.Interface.Unknown
 ) where
@@ -28,10 +27,9 @@ import Graphics.D3D11Binding.Interface.D3D11RenderTargetView
 import Graphics.D3D11Binding.Interface.D3D11Resource
 import Graphics.D3D11Binding.Interface.D3DBlob
 import Graphics.D3D11Binding.Interface.D3DInclude
+import Graphics.D3D11Binding.Interface.D3D11Texture2D
 
 import Graphics.D3D11Binding.Interface.DxgiAdapter
 import Graphics.D3D11Binding.Interface.DxgiSwapChain
-
-import Graphics.D3D11Binding.Interface.Texture2D
 
 import Graphics.D3D11Binding.Interface.Unknown

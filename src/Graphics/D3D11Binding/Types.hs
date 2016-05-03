@@ -264,3 +264,62 @@ instance Storable D3D11Box where
   alignment = cAlignment
   poke = cPoke
   peek = cPeek
+  
+data D3D11Texture2DDesc = D3D11Texture2DDesc
+  { textureWidth :: Word32
+  , textureHeight :: Word32
+  , mipLevels :: Word32
+  , arraySize :: Word32
+  , textureFormat :: DxgiFormat
+  , textureSampleDesc :: DxgiSampleDesc
+  , textureUsage :: D3D11Usage
+  , textureBindFlags :: Word32
+  , textureCPUAccessFlags :: Word32
+  , textureMiscFlags :: Word32 } deriving (Generic)
+  
+instance CStorable D3D11Texture2DDesc
+instance Storable D3D11Texture2DDesc where
+  sizeOf = cSizeOf
+  alignment = cAlignment
+  poke = cPoke
+  peek = cPeek
+  
+data D3D11DepthStencilViewDesc = D3D11DepthStencilViewDesc
+  { dsvFormat :: DxgiFormat
+  , dsvViewDimension :: D3D11DsvDimension
+  , dsvFlags :: Word32
+  , dsv :: Dsv } deriving (Generic)
+
+instance CStorable D3D11DepthStencilViewDesc
+instance Storable D3D11DepthStencilViewDesc where
+  sizeOf = cSizeOf
+  alignment = cAlignment
+  poke = cPoke
+  peek = cPeek
+
+data Dsv = Dsv Word32 Word32 Word32 deriving (Generic)
+
+instance CStorable Dsv
+instance Storable Dsv where
+  sizeOf = cSizeOf
+  alignment = cAlignment
+  poke = cPoke
+  peek = cPeek
+
+tex1dDsv :: Word32 -> Dsv
+tex1dDsv mipSlice = Dsv mipSlice (fromIntegral 0) (fromIntegral 0)
+
+tex1dArrayDsv :: Word32 -> Word32 -> Word32 -> Dsv
+tex1dArrayDsv mipSlice firstArraySlice arraySize = Dsv mipSlice firstArraySlice arraySize
+
+tex2dDsv :: Word32 -> Dsv
+tex2dDsv mipSlice = Dsv mipSlice (fromIntegral 0) (fromIntegral 0)
+
+tex2dArrayDsv :: Word32 -> Word32 -> Word32 -> Dsv
+tex2dArrayDsv mipSlice firstArraySlice arraySize = Dsv mipSlice firstArraySlice arraySize
+
+tex2dMsDsv :: Dsv
+tex2dMsDsv = Dsv (fromIntegral 0) (fromIntegral 0) (fromIntegral 0)
+
+tex2dMsArrayDsv :: Word32 -> Word32 -> Dsv
+tex2dMsArrayDsv firstArraySlice arraySize = Dsv firstArraySlice arraySize (fromIntegral 0)

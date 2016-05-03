@@ -51,3 +51,12 @@ rotationY angle = m
                  (Vec4 0 1 0 0)
                  (Vec4 sinAngle 0 cosAngle 0)
                  (Vec4 0 0 0 1)
+
+rotationZ :: Float -> Mat4
+rotationZ angle = m
+  where sinAngle = sin angle
+        cosAngle = cos angle
+        m = Mat4 (Vec4 cosAngle sinAngle 0 0)
+                 (Vec4 (-sinAngle) cosAngle 0 0)
+                 (Vec4 0 0 1 0)
+                 (Vec4 0 0 0 1)

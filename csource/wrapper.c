@@ -200,3 +200,31 @@ void DrawIndexed(
 {
   This->lpVtbl->DrawIndexed(This, IndexCount, StartIndexLocation, BaseVertexLocation);
 }
+
+HRESULT CreateTexture2D( 
+  ID3D11Device* This,
+  const D3D11_TEXTURE2D_DESC *pDesc,
+  const D3D11_SUBRESOURCE_DATA *pInitialData,
+  ID3D11Texture2D **ppTexture2D)
+{
+  return This->lpVtbl->CreateTexture2D(This, pDesc, pInitialData, ppTexture2D);
+}
+
+HRESULT CreateDepthStencilView(
+  ID3D11Device* This,
+  ID3D11Resource *pResource,
+  const D3D11_DEPTH_STENCIL_VIEW_DESC *pDesc,
+  ID3D11DepthStencilView **ppDepthStencilView)
+{
+    return This->lpVtbl->CreateDepthStencilView(This, pResource, pDesc, ppDepthStencilView);
+}
+
+void ClearDepthStencilView(
+  ID3D11DeviceContext* This,
+  ID3D11DepthStencilView *pDepthStencilView,
+  UINT ClearFlags,
+  FLOAT Depth,
+  UINT8 Stencil)
+{
+  return This->lpVtbl->ClearDepthStencilView(This, pDepthStencilView, ClearFlags, Depth, Stencil);
+}

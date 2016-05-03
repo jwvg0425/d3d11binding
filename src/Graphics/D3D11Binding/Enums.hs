@@ -138,11 +138,13 @@ instance Enum DxgiFormat where
   fromEnum DxgiFormatR32G32B32A32Float = 2
   fromEnum DxgiFormatR32G32B32Float = 6
   fromEnum DxgiFormatR8G8B8A8Unorm = 28
+  fromEnum DxgiFormatD24UnormS8Uint = 45
   fromEnum DxgiFormatR16Uint = 57
   toEnum 0 = DxgiFormatUnknown
   toEnum 2 = DxgiFormatR32G32B32A32Float
   toEnum 6 = DxgiFormatR32G32B32Float
   toEnum 28 = DxgiFormatR8G8B8A8Unorm
+  toEnum 45 = DxgiFormatD24UnormS8Uint
   toEnum 57 = DxgiFormatR16Uint
   toEnum unmatched = error ("DxgiFormat.toEnum: cannot match " ++ show unmatched)
 
@@ -420,3 +422,52 @@ instance Enum D3D11PrimitiveTopology where
   toEnum 0 = D3D11PrimitiveTopologyUndefined
   toEnum 4 = D3D11PrimitiveTopologyTrianglelist
   toEnum unmatched = error ("D3D11PrimitiveTopology.toEnum: cannot match " ++ show unmatched)
+  
+data D3D11DsvDimension = D3D11DsvDimensionUnknown
+                       | D3D11DsvDimensionTexture1D
+                       | D3D11DsvDimensionTexture1DArray
+                       | D3D11DsvDimensionTexture2D
+                       | D3D11DsvDimensionTexture2DArray
+                       | D3D11DsvDimensionTexture2DMs
+                       | D3D11DsvDimensionTexture2DMsArray
+                       deriving (Eq, Show)
+                       
+instance Enum D3D11DsvDimension where
+  fromEnum D3D11DsvDimensionUnknown = 0
+  fromEnum D3D11DsvDimensionTexture1D = 1
+  fromEnum D3D11DsvDimensionTexture1DArray = 2
+  fromEnum D3D11DsvDimensionTexture2D = 3
+  fromEnum D3D11DsvDimensionTexture2DArray = 4
+  fromEnum D3D11DsvDimensionTexture2DMs = 5
+  fromEnum D3D11DsvDimensionTexture2DMsArray = 6
+  toEnum 0 = D3D11DsvDimensionUnknown
+  toEnum 1 = D3D11DsvDimensionTexture1D
+  toEnum 2 = D3D11DsvDimensionTexture1DArray
+  toEnum 3 = D3D11DsvDimensionTexture2D
+  toEnum 4 = D3D11DsvDimensionTexture2DArray
+  toEnum 5 = D3D11DsvDimensionTexture2DMs
+  toEnum 6 = D3D11DsvDimensionTexture2DMsArray
+  toEnum unmatched = error ("D3D11DsvDimension.toEnum: cannot match " ++ show unmatched)
+  
+instance Storable D3D11DsvDimension where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
+  
+instance CStorable D3D11DsvDimension where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
+  
+data D3D11ClearFlag = D3D11ClearDepth
+                    | D3D11ClearStencil
+                    deriving (Eq, Show)
+                    
+instance Enum D3D11ClearFlag where
+  fromEnum D3D11ClearDepth = 0
+  fromEnum D3D11ClearStencil = 1
+  toEnum 0 = D3D11ClearDepth
+  toEnum 1 = D3D11ClearStencil
+  toEnum unmatched = error ("D3D11ClearFlag.toEnum: cannot match " ++ show unmatched)

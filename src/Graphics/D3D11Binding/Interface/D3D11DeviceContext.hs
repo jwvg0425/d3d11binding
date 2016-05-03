@@ -1,5 +1,6 @@
 module Graphics.D3D11Binding.Interface.D3D11DeviceContext where
 import Data.Word
+import Data.Bits
 
 import Foreign.Storable
 import Foreign.Marshal.Alloc
@@ -31,7 +32,10 @@ foreign import stdcall "RSSetViewports" c_rsSetViewports
 
 foreign import stdcall "ClearRenderTargetView" c_clearRenderTargetView
   :: Ptr ID3D11DeviceContext -> Ptr ID3D11RenderTargetView -> Ptr Float -> IO ()
-  
+
+foreign import stdcall "ClearDepthStencilView" c_clearDepthStencilView
+  :: Ptr ID3D11DeviceContext -> Ptr ID3D11DepthStencilView -> Word32 -> Float -> Word8 -> IO ()
+
 foreign import stdcall "IASetInputLayout" c_iaSetInputLayout
   :: Ptr ID3D11DeviceContext -> Ptr ID3D11InputLayout -> IO ()
   
@@ -67,12 +71,15 @@ class (UnknownInterface interface) => D3D11DeviceContextInterface interface wher
   omSetRenderTargets ptr renderTargetViews depthStencilView = alloca $ \pRenderTargetViews -> do
     pokeArray pRenderTargetViews renderTargetViews
     c_omSetRenderTargets (castPtr ptr) (fromIntegral $ length renderTargetViews) pRenderTargetViews depthStencilView
+  
   rsSetViewports :: Ptr interface -> [D3D11Viewport] -> IO ()
   rsSetViewports ptr viewports = alloca $ \pViewports -> do
     pokeArray pViewports viewports
     c_rsSetViewports (castPtr ptr) (fromIntegral $ length viewports) pViewports
+  
   iaSetInputLayout :: Ptr interface -> Ptr ID3D11InputLayout -> IO ()
   iaSetInputLayout ptr inputLayout = c_iaSetInputLayout (castPtr ptr) inputLayout
+  
   iaSetVertexBuffers :: Ptr interface -> Word32 -> [(Ptr ID3D11Buffer, Word32, Word32)] -> IO ()
   iaSetVertexBuffers ptr startSlot bufferData = do
     let buffer = map first bufferData
@@ -86,33 +93,48 @@ class (UnknownInterface interface) => D3D11DeviceContextInterface interface wher
     where first (a,_,_) = a
           second (_,b,_) = b
           third (_,_,c) = c
+  
   iaSetIndexBuffer :: Ptr interface -> Ptr ID3D11Buffer -> DxgiFormat -> Word32 -> IO ()
   iaSetIndexBuffer ptr buffer format offset = c_iaSetIndexBuffer (castPtr ptr) buffer (fromIntegral $ fromEnum format) offset
+  
   iaSetPrimitiveTopology :: Ptr interface -> D3D11PrimitiveTopology -> IO ()
   iaSetPrimitiveTopology ptr topology = c_iaSetPrimitiveTopology (castPtr ptr) (fromIntegral $ fromEnum topology)
+  
   clearRenderTargetView :: Ptr interface -> Ptr ID3D11RenderTargetView -> Color -> IO ()
   clearRenderTargetView ptr renderTargetView color = alloca $ \pColor -> do
     poke pColor color
     c_clearRenderTargetView (castPtr ptr) renderTargetView (castPtr pColor)
+  
+  clearDepthStencilView :: Ptr interface -> Ptr ID3D11DepthStencilView -> [D3D11ClearFlag] -> Float -> Word8 -> IO ()
+  clearDepthStencilView ptr depthStencilView flags depth stencil = do
+    let sumFlag = fromIntegral $ foldl (\acc x -> acc .|. (fromEnum x)) 0 flags
+    c_clearDepthStencilView (castPtr ptr) depthStencilView sumFlag depth stencil
+  
   clearState :: Ptr interface -> IO ()
   clearState ptr = c_clearState (castPtr ptr)
+  
   vsSetShader :: Ptr interface -> Ptr ID3D11VertexShader -> [Ptr ID3D11ClassInstance] -> IO ()
   vsSetShader ptr vertexShader classInstances = maybePokeArray classInstances $ \pClassInstances -> do
     let classInstanceNum = fromIntegral $ length classInstances
     c_vsSetShader (castPtr ptr) vertexShader pClassInstances classInstanceNum
+  
   vsSetConstantBuffers :: Ptr interface -> Word32 -> [Ptr ID3D11Buffer] -> IO ()
   vsSetConstantBuffers ptr startSlot buffers = alloca $ \pBuffer -> do
     pokeArray pBuffer buffers
     c_vsSetConstantBuffers (castPtr ptr) startSlot (fromIntegral $ length buffers) pBuffer
+  
   psSetShader :: Ptr interface -> Ptr ID3D11PixelShader -> [Ptr ID3D11ClassInstance] -> IO ()
   psSetShader ptr pixelShader classInstances = maybePokeArray classInstances $ \pClassInstances -> do
     let classInstanceNum = fromIntegral $ length classInstances
     c_psSetShader (castPtr ptr) pixelShader pClassInstances classInstanceNum
+  
   draw :: Ptr interface -> Word32 -> Word32 -> IO ()
   draw ptr vertexCount startVertexLocation = c_draw (castPtr ptr) vertexCount startVertexLocation
+  
   drawIndexed :: Ptr interface -> Word32 -> Word32 -> Word32 -> IO ()
   drawIndexed ptr indexCount startIndexLocation baseVertexLocation =
     c_drawIndexed (castPtr ptr) indexCount startIndexLocation baseVertexLocation
+  
   updateSubresource :: 
     (D3D11ResourceInterface resource, Storable store) => 
     Ptr interface -> Ptr resource -> Word32 -> Maybe D3D11Box -> store -> Word32 -> Word32 -> IO ()

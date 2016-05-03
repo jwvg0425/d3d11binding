@@ -63,7 +63,7 @@ windowHeight = 480
 main :: IO ()
 main = do
   hWnd <- createDefaultWindow windowWidth windowHeight wndProc
-  useDevice hWnd $ \swapChain device deviceContext renderTargetView -> do
+  useDevice hWnd $ \swapChain device deviceContext renderTargetView depthStencilView -> do
     vb <- compileShaderFromFile "fx/Cube.fx" "VS" "vs_4_0"
     (il, vs) <- use vb $ \vsBlob -> do
       pointer <- getBufferPointer vsBlob
@@ -172,19 +172,20 @@ main = do
     
     use cb $ \constantBuffer -> use il $ \inputLayout -> 
       use vs $ \vertexShader -> use idb $ \ indexBuffer -> use ps $ \pixelShader -> do
-        messagePump hWnd deviceContext swapChain renderTargetView vertexShader pixelShader constantBuffer
+        messagePump hWnd deviceContext swapChain renderTargetView depthStencilView vertexShader pixelShader constantBuffer
 
 useDevice hWnd proc = do
-  (s, d, dc, r) <- initDevice hWnd
-  use s $ \swapChain -> use d $ \device -> use dc $ \deviceContext -> use r $ \renderTargetView ->
-    proc swapChain device deviceContext renderTargetView
+  (s, d, dc, r, ds) <- initDevice hWnd
+  use s $ \swapChain -> use d $ \device -> use dc $ \deviceContext -> use r $ \renderTargetView -> use ds $ \depthStencilView ->
+    proc swapChain device deviceContext renderTargetView depthStencilView
   
 wndProc :: WindowClosure
 wndProc hWnd msg wParam lParam
   | msg == wM_DESTROY = postQuitMessage 0 >> return 0
   | otherwise = defWindowProc (Just hWnd) msg wParam lParam
 
-initDevice :: HWND -> IO (Ptr IDxgiSwapChain, Ptr ID3D11Device, Ptr ID3D11DeviceContext, Ptr ID3D11RenderTargetView)
+initDevice :: HWND ->
+   IO (Ptr IDxgiSwapChain, Ptr ID3D11Device, Ptr ID3D11DeviceContext, Ptr ID3D11RenderTargetView, Ptr ID3D11DepthStencilView)
 initDevice hWnd = do
   let bd = DxgiModeDesc 
             windowWidth 
@@ -215,10 +216,31 @@ initDevice hWnd = do
   Right (backBuffer :: Ptr ID3D11Texture2D) <- getBuffer swapChain (fromIntegral 0)
   Right renderTargetView <- use backBuffer $ \b -> createRenderTargetView device b Nothing
   
+  let td = D3D11Texture2DDesc
+            windowWidth
+            windowHeight
+            1
+            1
+            DxgiFormatD24UnormS8Uint
+            (DxgiSampleDesc 1 0)
+            D3D11UsageDefault
+            (d3d11BindFlags [D3D11BindDepthStencil])
+            0
+            0
+  Right depthStencil <- createTexture2D device td ([]::[Word16])
+  
+  let descDsv = D3D11DepthStencilViewDesc
+                  DxgiFormatD24UnormS8Uint
+                  D3D11DsvDimensionTexture2D
+                  0
+                  (tex2dDsv 0)
+  
+  Right depthStencilView <- createDepthStencilView device depthStencil (Just descDsv)
+            
   omSetRenderTargets deviceContext [renderTargetView] nullPtr
   rsSetViewports deviceContext [D3D11Viewport 0 0 windowWidth windowHeight 0 1]
   
-  return (swapChain, device, deviceContext, renderTargetView)
+  return (swapChain, device, deviceContext, renderTargetView, depthStencilView)
 
 compileShaderFromFile :: String -> String -> String -> IO (Ptr ID3DBlob)
 compileShaderFromFile fileName entryPoint shaderModel = do
@@ -271,9 +293,9 @@ pM_NOYIELD = 0x0002
 
 messagePump 
   :: HWND -> Ptr ID3D11DeviceContext -> 
-     Ptr IDxgiSwapChain -> Ptr ID3D11RenderTargetView ->
+     Ptr IDxgiSwapChain -> Ptr ID3D11RenderTargetView -> Ptr ID3D11DepthStencilView ->
      Ptr ID3D11VertexShader -> Ptr ID3D11PixelShader -> Ptr ID3D11Buffer -> IO ()
-messagePump hwnd deviceContext swapChain renderTargetView vs ps cb = Graphics.Win32.allocaMessage $ \ msg ->
+messagePump hwnd deviceContext swapChain renderTargetView depthStencilView vs ps cb = Graphics.Win32.allocaMessage $ \ msg ->
   let pump = do
         m <- peekByteOff msg 4 :: IO WindowMessage
         when (m /= wM_QUIT) $ do
@@ -284,15 +306,20 @@ messagePump hwnd deviceContext swapChain renderTargetView vs ps cb = Graphics.Wi
             dispatchMessage msg
             return ()
           else do
-            render deviceContext swapChain renderTargetView vs ps cb
+            render deviceContext swapChain renderTargetView depthStencilView vs ps cb
           pump
   in pump
   
 render 
-  :: Ptr ID3D11DeviceContext -> Ptr IDxgiSwapChain -> Ptr ID3D11RenderTargetView ->
+  :: Ptr ID3D11DeviceContext -> Ptr IDxgiSwapChain -> Ptr ID3D11RenderTargetView -> Ptr ID3D11DepthStencilView -> 
      Ptr ID3D11VertexShader -> Ptr ID3D11PixelShader -> Ptr ID3D11Buffer -> IO ()
-render deviceContext swapChain renderTargetView vs ps cb = do
+render deviceContext swapChain renderTargetView depthStencilView vs ps cb = do
   clearRenderTargetView deviceContext renderTargetView $ Color 0.0 0.125 0.3 1.0
+  clearDepthStencilView deviceContext depthStencilView [D3D11ClearDepth] 1 0
+  
+  vsSetShader deviceContext vs []
+  vsSetConstantBuffers deviceContext 0 [cb]
+  psSetShader deviceContext ps []
   
   t <- getCPUTime
   let d = (fromIntegral t) / 1000000000000
@@ -305,11 +332,24 @@ render deviceContext swapChain renderTargetView vs ps cb = do
   let projection = perspectiveFovLH (pi / 2) (windowWidth / windowHeight) 0.01 100
   let cbData = ConstantBuffer (transpose world) (transpose view) (transpose projection)
   
+  let spin = rotationZ (-d)
+  let orbit = rotationY (-d * 2)
+  let translate = Mat4 (Vec4 1.0 0.0 0.0 0.0)
+                       (Vec4 0.0 1.0 0.0 0.0)
+                       (Vec4 0.0 0.0 1.0 0.0)
+                       (Vec4 (-4.0) 0.0 0.0 1.0)
+  let scale = Mat4 (Vec4 0.3 0.0 0.0 0.0)
+                   (Vec4 0.0 0.3 0.0 0.0)
+                   (Vec4 0.0 0.0 0.3 0.0)
+                   (Vec4 0.0 0.0 0.0 1.0)
+  let world2 = scale .*. spin .*. translate .*. orbit
+  let cbData2 = ConstantBuffer (transpose world2) (transpose view) (transpose projection)
+  
   updateSubresource deviceContext cb 0 Nothing cbData 0 0
   
-  vsSetShader deviceContext vs []
-  vsSetConstantBuffers deviceContext 0 [cb]
-  psSetShader deviceContext ps []
+  drawIndexed deviceContext 36 0 0
+  
+  updateSubresource deviceContext cb 0 Nothing cbData2 0 0
   
   drawIndexed deviceContext 36 0 0
   
