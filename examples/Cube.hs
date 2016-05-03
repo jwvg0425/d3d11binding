@@ -7,7 +7,7 @@ import System.Exit
   
 import Data.Int
 import Data.Word
-import Data.Matrix
+import Data.Vect.Float
 
 import Control.Exception
 import Control.Monad
@@ -37,9 +37,9 @@ instance Storable SimpleVertex where
 instance HasSubresourceData SimpleVertex
 
 data ConstantBuffer = ConstantBuffer 
- { world :: Matrix4
- , view :: Matrix4
- , projection :: Matrix4 } deriving (Generic)
+ { world :: Mat4
+ , view :: Mat4
+ , projection :: Mat4 } deriving (Generic)
 
 instance CStorable ConstantBuffer
 instance Storable ConstantBuffer where
@@ -286,10 +286,13 @@ render
 render deviceContext swapChain renderTargetView vs ps cb = do
   clearRenderTargetView deviceContext renderTargetView $ Color 0.0 0.125 0.3 1.0
  
-  let world = identity4 :: Matrix4
-  let view = identity4 :: Matrix4
-  let projection = identity4 :: Matrix4
-  let cbData = ConstantBuffer world view projection
+  let eye = Vec3 0.0 1.0 (-5.0)
+  let at = Vec3 0.0 1.0 0.0
+  let up = Vec3 0.0 1.0 0.0
+  let world = idmtx
+  let view = lookAtLH eye at up
+  let projection = perspectiveFovLH (pi / 2) (800 / 600) 0.01 100
+  let cbData = ConstantBuffer (transpose world) (transpose view) (transpose projection)
   
   updateSubresource deviceContext cb 0 Nothing cbData 0 0
   

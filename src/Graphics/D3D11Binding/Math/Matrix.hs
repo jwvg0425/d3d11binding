@@ -1,33 +1,44 @@
 module Graphics.D3D11Binding.Math.Matrix where
   
-import Data.Matrix
+import Data.Vect.Float
 
 import Foreign.Ptr
 import Foreign.Marshal.Array
 import Foreign.Storable
 import Foreign.CStorable
-
-type Matrix4 = Matrix Float
-
-matrix4 = matrix 4 4
-
-matrix4FromList = fromList 4 4
-
-identity4 :: (Num a) => Matrix a
-identity4 = identity 4
-
-instance (Storable m) => Storable (Matrix m) where
-  sizeOf _ = 64
-  alignment _ = 8
-  peek ptr = do 
-    list <- peekArray 16 (castPtr ptr)
-    return $ matrix4FromList list
-  poke ptr mat = do
-    let list = toList mat
-    pokeArray (castPtr ptr) list
     
-instance (Storable m) => CStorable (Matrix m) where
+instance CStorable Mat4 where
   cSizeOf = sizeOf
   cAlignment = alignment
   cPeek = peek
   cPoke = poke
+
+lookAtLH :: Vec3 -> Vec3 -> Vec3 -> Mat4
+lookAtLH eye focus up = lookToLH eye eyeDir up
+  where eyeDir = focus &- eye
+ 
+lookToLH :: Vec3 -> Vec3 -> Vec3 -> Mat4
+lookToLH eye eyeDir up = transpose m
+  where r2@(Vec3 r2x r2y r2z) = normalize eyeDir
+        r0@(Vec3 r0x r0y r0z) = normalize (up &^ r2)
+        r1@(Vec3 r1x r1y r1z) = r2 &^ r0
+        negEye = neg eye
+        d0 = r0 &. negEye
+        d1 = r1 &. negEye
+        d2 = r2 &. negEye
+        m = Mat4 (Vec4 r0x r0y r0z d0)
+                 (Vec4 r1x r1y r1z d1)
+                 (Vec4 r2x r2y r2z d2)
+                 (Vec4   0   0   0  1)
+                 
+perspectiveFovLH :: Float -> Float -> Float -> Float -> Mat4
+perspectiveFovLH fovAngleY aspectRatio nearZ farZ = m
+  where sinFov = sin (fovAngleY * 0.5)
+        cosFov = cos (fovAngleY * 0.5)
+        height = cosFov / sinFov
+        width = height / aspectRatio
+        rate = farZ / (farZ - nearZ)
+        m = Mat4 (Vec4 width 0 0 0)
+                 (Vec4 0 height 0 0)
+                 (Vec4 0 0 rate 1.0)
+                 (Vec4 0 0 ((-rate)*nearZ) 0)
