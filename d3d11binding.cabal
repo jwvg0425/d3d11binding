@@ -59,8 +59,7 @@ library
     Graphics.D3D11Binding.Math
     
     Graphics.D3D11Binding.Math.Matrix
-    Graphics.D3D11Binding.Math.Vertex3
-    Graphics.D3D11Binding.Math.Vertex4
+    Graphics.D3D11Binding.Math.Vertex
     
     Graphics.D3D11Binding.GUID
   -- other-modules:       

@@ -15,7 +15,6 @@ import Graphics.Win32
 import System.Win32.DLL (getModuleHandle)
 
 import Graphics.D3D11Binding
-import Graphics.D3D11Binding.Math.Vertex3
 
 foreign import stdcall "PostQuitMessage" postQuitMessage :: Int32 -> IO ()
 
