@@ -20,3 +20,5 @@ this example needs fx/Cube.fx HLSL File to run.
 ![screenshot](images/revolve_cube.gif)
 
 this example describes how to use depth stencil buffer and various transformations.
+
+this example needs fx/RevolveCube.fx HLSL File to run.
