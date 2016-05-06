@@ -63,8 +63,8 @@ data DxgiModeDesc = DxgiModeDesc
   , height :: Word32
   , refreshRate :: DxgiRational
   , dxgiModeFormat :: DxgiFormat
-  , scanlineOrdering :: DxgiModeScanlineOrder
-  , scaling :: DxgiModeScaling }
+  , dxgiScanlineOrdering :: DxgiModeScanlineOrder
+  , dxgiScaling :: DxgiModeScaling }
   deriving (Generic)
   
 instance CStorable DxgiModeDesc  

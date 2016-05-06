@@ -2,6 +2,8 @@
 module Graphics.D3D11Binding.Math.Vertex where
 import GHC.Generics (Generic)
 
+import Data.Vect.Float
+
 import Foreign.Storable
 import Foreign.CStorable
 
@@ -67,3 +69,9 @@ instance Vertex Vertex4 where
   y (Vertex4 _ vy _ _) = vy
   z (Vertex4 _ _ vz _) = vz
   w (Vertex4 _ _ _ vw) = vw
+  
+instance CStorable Vec4 where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke

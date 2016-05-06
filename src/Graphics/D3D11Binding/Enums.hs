@@ -137,12 +137,14 @@ instance Enum DxgiFormat where
   fromEnum DxgiFormatUnknown = 0
   fromEnum DxgiFormatR32G32B32A32Float = 2
   fromEnum DxgiFormatR32G32B32Float = 6
+  fromEnum DxgiFormatR32G32Float = 16
   fromEnum DxgiFormatR8G8B8A8Unorm = 28
   fromEnum DxgiFormatD24UnormS8Uint = 45
   fromEnum DxgiFormatR16Uint = 57
   toEnum 0 = DxgiFormatUnknown
   toEnum 2 = DxgiFormatR32G32B32A32Float
   toEnum 6 = DxgiFormatR32G32B32Float
+  toEnum 16 = DxgiFormatR32G32Float
   toEnum 28 = DxgiFormatR8G8B8A8Unorm
   toEnum 45 = DxgiFormatD24UnormS8Uint
   toEnum 57 = DxgiFormatR16Uint
