@@ -62,6 +62,9 @@ foreign import stdcall "UpdateSubresource" c_updateSubresource
 
 foreign import stdcall "VSSetConstantBuffers" c_vsSetConstantBuffers
   :: Ptr ID3D11DeviceContext -> Word32 -> Word32 -> Ptr (Ptr ID3D11Buffer) -> IO ()
+  
+foreign import stdcall "PSSetConstantBuffers" c_psSetConstantBuffers
+  :: Ptr ID3D11DeviceContext -> Word32 -> Word32 -> Ptr (Ptr ID3D11Buffer) -> IO ()
 
 foreign import stdcall "DrawIndexed" c_drawIndexed
   :: Ptr ID3D11DeviceContext -> Word32 -> Word32 -> Word32 -> IO ()
@@ -122,6 +125,11 @@ class (UnknownInterface interface) => D3D11DeviceContextInterface interface wher
   vsSetConstantBuffers ptr startSlot buffers = alloca $ \pBuffer -> do
     pokeArray pBuffer buffers
     c_vsSetConstantBuffers (castPtr ptr) startSlot (fromIntegral $ length buffers) pBuffer
+  
+  psSetConstantBuffers :: Ptr interface -> Word32 -> [Ptr ID3D11Buffer] -> IO ()
+  psSetConstantBuffers ptr startSlot buffers = alloca $ \pBuffer -> do
+    pokeArray pBuffer buffers
+    c_psSetConstantBuffers (castPtr ptr) startSlot (fromIntegral $ length buffers) pBuffer
   
   psSetShader :: Ptr interface -> Ptr ID3D11PixelShader -> [Ptr ID3D11ClassInstance] -> IO ()
   psSetShader ptr pixelShader classInstances = maybePokeArray classInstances $ \pClassInstances -> do

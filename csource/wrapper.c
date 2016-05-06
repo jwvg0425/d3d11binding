@@ -192,6 +192,15 @@ void VSSetConstantBuffers(
   This->lpVtbl->VSSetConstantBuffers(This, StartSlot, NumBuffers, ppConstantBuffers);
 }
 
+void PSSetConstantBuffers(
+  ID3D11DeviceContext* This,
+  UINT StartSlot,
+  UINT NumBuffers,
+  ID3D11Buffer *const *ppConstantBuffers)
+{
+  This->lpVtbl->PSSetConstantBuffers(This, StartSlot, NumBuffers, ppConstantBuffers);
+}
+
 void DrawIndexed(
   ID3D11DeviceContext* This,
   UINT IndexCount,
