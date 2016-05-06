@@ -22,3 +22,11 @@ this example needs fx/Cube.fx HLSL File to run.
 this example describes how to use depth stencil buffer and various transformations.
 
 this example needs fx/RevolveCube.fx HLSL File to run.
+
+# Lighting
+
+![screenshot](images/lighting.gif)  
+
+this example describes how to apply simle lighting.
+
+this example needs fx/Lighting.fx HLSL File to run.
