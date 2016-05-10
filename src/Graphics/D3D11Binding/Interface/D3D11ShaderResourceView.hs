@@ -1,0 +1,7 @@
+module Graphics.D3D11Binding.Interface.D3D11ShaderResourceView where
+
+import Graphics.D3D11Binding.Interface.Unknown
+
+data ID3D11ShaderResourceView = ID3D11ShaderResourceView
+
+instance UnknownInterface ID3D11ShaderResourceView

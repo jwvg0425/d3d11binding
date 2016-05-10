@@ -473,3 +473,35 @@ instance Enum D3D11ClearFlag where
   toEnum 1 = D3D11ClearDepth
   toEnum 2 = D3D11ClearStencil
   toEnum unmatched = error ("D3D11ClearFlag.toEnum: cannot match " ++ show unmatched)
+
+data DDSAlphaMode = DDSAlphaModeUnknown
+                  | DDSAlphaModeStraight
+                  | DDSAlphaModePremultiplied
+                  | DDSAlphaModeOpaque
+                  | DDSAlphaModeCustom
+                  deriving (Eq, Show)
+                  
+instance Enum DDSAlphaMode where
+  fromEnum DDSAlphaModeUnknown = 0
+  fromEnum DDSAlphaModeStraight = 1
+  fromEnum DDSAlphaModePremultiplied = 2
+  fromEnum DDSAlphaModeOpaque = 3
+  fromEnum DDSAlphaModeCustom = 4
+  toEnum 0 = DDSAlphaModeUnknown
+  toEnum 1 = DDSAlphaModeStraight
+  toEnum 2 = DDSAlphaModePremultiplied
+  toEnum 3 = DDSAlphaModeOpaque
+  toEnum 4 = DDSAlphaModeCustom
+  toEnum unmatched =  error ("DDSAlphaMode.toEnum: cannot match " ++ show unmatched)
+  
+instance Storable DDSAlphaMode where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
+  
+instance CStorable DDSAlphaMode where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke

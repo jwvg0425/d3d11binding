@@ -26,6 +26,7 @@ import Graphics.D3D11Binding.Math
 import Foreign.Marshal.Array
 import Foreign.Marshal.Alloc
 import Foreign.Storable
+import Foreign.C.String
 
 type PIDxgiAdapter = Ptr IDxgiAdapter
 type PD3DFeatureLevel = Ptr D3DFeatureLevel
@@ -72,3 +73,14 @@ d3d11CreateDeviceAndSwapChain adapter driverType software flags featureLevels sw
       peekFeature <- peek feature
       peekContext <- peek context
       return $ Right (peekSwapChain, peekDevice, peekFeature, peekContext)
+      
+foreign import stdcall "CreateDDSTextureFromFile" c_createDDSTextureFromFile
+  :: Ptr ID3D11Device -> CWString -> Ptr (Ptr ID3D11Resource) -> 
+     Ptr (Ptr ID3D11ShaderResourceView) -> Word32 -> Ptr DDSAlphaMode -> IO HRESULT
+  
+createDDSTextureFromFile :: Ptr ID3D11Device -> String -> IO (Either HRESULT (Ptr ID3D11ShaderResourceView))
+createDDSTextureFromFile device fileName = 
+  alloca $ \pResource -> withCWString fileName $ \wFileName ->  do
+    hr <- c_createDDSTextureFromFile device wFileName nullPtr pResource 0 nullPtr
+    if hr < 0 then return (Left hr)
+    else Right <$> peek pResource

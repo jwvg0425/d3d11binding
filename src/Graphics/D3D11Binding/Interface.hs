@@ -7,6 +7,7 @@ module Graphics.D3D11Binding.Interface
 , module Graphics.D3D11Binding.Interface.D3D11InputLayout
 , module Graphics.D3D11Binding.Interface.D3D11RenderTargetView
 , module Graphics.D3D11Binding.Interface.D3D11Resource
+, module Graphics.D3D11Binding.Interface.D3D11ShaderResourceView
 , module Graphics.D3D11Binding.Interface.D3DBlob
 , module Graphics.D3D11Binding.Interface.D3DInclude
 , module Graphics.D3D11Binding.Interface.D3D11Texture2D
@@ -25,6 +26,8 @@ import Graphics.D3D11Binding.Interface.D3D11DeviceContext
 import Graphics.D3D11Binding.Interface.D3D11InputLayout
 import Graphics.D3D11Binding.Interface.D3D11RenderTargetView
 import Graphics.D3D11Binding.Interface.D3D11Resource
+import Graphics.D3D11Binding.Interface.D3D11ShaderResourceView
+
 import Graphics.D3D11Binding.Interface.D3DBlob
 import Graphics.D3D11Binding.Interface.D3DInclude
 import Graphics.D3D11Binding.Interface.D3D11Texture2D
