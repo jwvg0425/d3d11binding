@@ -114,16 +114,9 @@ void CloseHandleSafe(HANDLE h) { if (h) CloseHandle(h);}
 
 inline HANDLE safe_handle( HANDLE h ) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
 
-inline void SetDebugObjectName(ID3D11DeviceChild* resource, const char* name)
-{
-#if defined(_DEBUG) || defined(PROFILE)
-    resource->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(name) - 1, name);
-#endif
-}
-
 //--------------------------------------------------------------------------------------
 static HRESULT LoadTextureDataFromFile( const wchar_t* fileName,
-                                        uint8_t* ddsData,
+                                        uint8_t** ddsData,
                                         DDS_HEADER** header,
                                         uint8_t** bitData,
                                         size_t* bitSize
@@ -162,7 +155,7 @@ static HRESULT LoadTextureDataFromFile( const wchar_t* fileName,
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
     FILE_STANDARD_INFO fileInfo;
-    if ( !GetFileInformationByHandleEx( hFile.get(), FileStandardInfo, &fileInfo, sizeof(fileInfo) ) )
+    if ( !GetFileInformationByHandleEx( hFile, FileStandardInfo, &fileInfo, sizeof(fileInfo) ) )
     {
         CloseHandleSafe(hFile);
         return HRESULT_FROM_WIN32( GetLastError() );
@@ -187,8 +180,8 @@ static HRESULT LoadTextureDataFromFile( const wchar_t* fileName,
     }
 
     // create enough space for the file data
-    ddsData = malloc(sizeof(uint8_t) * FileSize.LowPart);
-    if (!ddsData)
+    *ddsData = malloc(sizeof(uint8_t) * FileSize.LowPart);
+    if (!*ddsData)
     {
         CloseHandleSafe(hFile);
         return E_OUTOFMEMORY;
@@ -197,41 +190,37 @@ static HRESULT LoadTextureDataFromFile( const wchar_t* fileName,
     // read the data in
     DWORD BytesRead = 0;
     if (!ReadFile( hFile,
-                   ddsData,
+                   *ddsData,
                    FileSize.LowPart,
                    &BytesRead,
                    NULL
                  ))
     {
         CloseHandleSafe(hFile);
-        free(ddsData);
         return HRESULT_FROM_WIN32( GetLastError() );
     }
 
     if (BytesRead < FileSize.LowPart)
     {
         CloseHandleSafe(hFile);
-        free(ddsData);
         return E_FAIL;
     }
 
     // DDS files always start with the same magic number ("DDS ")
-    uint32_t dwMagicNumber = *( const uint32_t* )( ddsData );
+    uint32_t dwMagicNumber = *( const uint32_t* )( *ddsData );
     if (dwMagicNumber != DDS_MAGIC)
     {
         CloseHandleSafe(hFile);
-        free(ddsData);
         return E_FAIL;
     }
 
-    DDS_HEADER* hdr = (DDS_HEADER*)( ddsData + sizeof( uint32_t ) );
+    DDS_HEADER* hdr = (DDS_HEADER*)( *ddsData + sizeof( uint32_t ) );
 
     // Verify header to validate DDS file
     if (hdr->size != sizeof(DDS_HEADER) ||
         hdr->ddspf.size != sizeof(DDS_PIXELFORMAT))
     {
         CloseHandleSafe(hFile);
-        free(ddsData);
         return E_FAIL;
     }
 
@@ -244,7 +233,6 @@ static HRESULT LoadTextureDataFromFile( const wchar_t* fileName,
         if (FileSize.LowPart < ( sizeof(DDS_HEADER) + sizeof(uint32_t) + sizeof(DDS_HEADER_DXT10) ) )
         {
             CloseHandleSafe(hFile);
-            free(ddsData);
             return E_FAIL;
         }
 
@@ -255,10 +243,9 @@ static HRESULT LoadTextureDataFromFile( const wchar_t* fileName,
     *header = hdr;
     ptrdiff_t offset = sizeof( uint32_t ) + sizeof( DDS_HEADER )
                        + (bDXT10Header ? sizeof( DDS_HEADER_DXT10 ) : 0);
-    *bitData = ddsData + offset;
+    *bitData = *ddsData + offset;
     *bitSize = FileSize.LowPart - offset;
     
-    free(ddsData);
     CloseHandleSafe(hFile);
     return S_OK;
 }
@@ -1029,6 +1016,8 @@ static HRESULT CreateD3DResources( ID3D11Device* d3dDevice,
                                                  initData,
                                                  &tex
                                                );
+                printf("%d\n",hr);
+                                               
                 if (SUCCEEDED( hr ) && tex != 0)
                 {
                     if (textureView != 0)
@@ -1245,7 +1234,7 @@ static HRESULT CreateTextureFromDDS( ID3D11Device* d3dDevice,
     }
     else
     {
-        format = GetDXGIFormat( (DDS_PIXELFORMAT*)&header->ddspf );
+        format = GetDXGIFormat( &(header->ddspf) );
 
         if (format == DXGI_FORMAT_UNKNOWN)
         {
@@ -1735,13 +1724,14 @@ HRESULT CreateDDSTextureFromFileExMipMap( ID3D11Device* d3dDevice,
 
     uint8_t* ddsData;
     HRESULT hr = LoadTextureDataFromFile( fileName,
-                                          ddsData,
+                                          &ddsData,
                                           &header,
                                           &bitData,
                                           &bitSize
                                         );
     if (FAILED(hr))
     {
+        free(ddsData);
         return hr;
     }
 
@@ -1779,16 +1769,16 @@ HRESULT CreateDDSTextureFromFileExMipMap( ID3D11Device* d3dDevice,
 
                 if (texture != 0 && *texture != 0)
                 {
-                    (*texture)->lpVtbl->SetPrivateData(*texture, WKPDID_D3DDebugObjectName,
-                                                static_cast<UINT>( strnlen_s(pstrName, MAX_PATH) ),
+                    (*texture)->lpVtbl->SetPrivateData(*texture, &WKPDID_D3DDebugObjectName,
+                                                (UINT)strnlen_s(pstrName, MAX_PATH),
                                                 pstrName
                                               );
                 }
 
                 if (textureView != 0 && *textureView != 0 )
                 {
-                    (*textureView)->lpVtbl->SetPrivateData(*textureView, WKPDID_D3DDebugObjectName,
-                                                    static_cast<UINT>( strnlen_s(pstrName, MAX_PATH) ),
+                    (*textureView)->lpVtbl->SetPrivateData(*textureView, &WKPDID_D3DDebugObjectName,
+                                                    (UINT)strnlen_s(pstrName, MAX_PATH),
                                                     pstrName
                                                   );
                 }
@@ -1800,5 +1790,6 @@ HRESULT CreateDDSTextureFromFileExMipMap( ID3D11Device* d3dDevice,
             *alphaMode = GetAlphaMode( header );
     }
 
+    free(ddsData);
     return hr;
 }
