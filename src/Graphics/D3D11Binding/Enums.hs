@@ -505,3 +505,149 @@ instance CStorable DDSAlphaMode where
   cAlignment = alignment
   cPeek = peek
   cPoke = poke
+  
+data D3D11Filter = D3D11FilterMinMagMipPoint
+                 | D3D11FilterMinMagPointMipLinear
+                 | D3D11FilterMinPointMagLinearMipPoint
+                 | D3D11FilterMinPointMagMipLinear
+                 | D3D11FilterMinLinearMagMipPoint
+                 | D3D11FilterMinLinearMagPointMipLinear
+                 | D3D11FilterMinMagLinearMipPoint
+                 | D3D11FilterMinMagMipLinear
+                 | D3D11FilterAnisotropic
+                 | D3D11FilterComparisonMinMagMipPoint
+                 | D3D11FilterComparisonMinMagPointMipLinear
+                 | D3D11FilterComparisonMinPointMagLinearMipPoint
+                 | D3D11FilterComparisonMinPointMagMipLinear
+                 | D3D11FilterComparisonMinLinearMagMipPoint
+                 | D3D11FilterComparisonMinLinearMagPointMipLinear
+                 | D3D11FilterComparisonMinMagLinearMipPoint
+                 | D3D11FilterComparisonMinMagMipLinear
+                 | D3D11FilterComparisonAnisotropic
+                 deriving (Eq, Show)
+                 
+instance Enum D3D11Filter where
+  fromEnum D3D11FilterMinMagMipPoint = 0
+  fromEnum D3D11FilterMinMagPointMipLinear = 0x1
+  fromEnum D3D11FilterMinPointMagLinearMipPoint = 0x4
+  fromEnum D3D11FilterMinPointMagMipLinear = 0x5
+  fromEnum D3D11FilterMinLinearMagMipPoint = 0x10
+  fromEnum D3D11FilterMinLinearMagPointMipLinear = 0x11
+  fromEnum D3D11FilterMinMagLinearMipPoint = 0x14
+  fromEnum D3D11FilterMinMagMipLinear = 0x15
+  fromEnum D3D11FilterAnisotropic = 0x55
+  fromEnum D3D11FilterComparisonMinMagMipPoint = 0x80
+  fromEnum D3D11FilterComparisonMinMagPointMipLinear = 0x81
+  fromEnum D3D11FilterComparisonMinPointMagLinearMipPoint = 0x84
+  fromEnum D3D11FilterComparisonMinPointMagMipLinear = 0x85
+  fromEnum D3D11FilterComparisonMinLinearMagMipPoint = 0x90
+  fromEnum D3D11FilterComparisonMinLinearMagPointMipLinear = 0x91
+  fromEnum D3D11FilterComparisonMinMagLinearMipPoint = 0x94
+  fromEnum D3D11FilterComparisonMinMagMipLinear = 0x95
+  fromEnum D3D11FilterComparisonAnisotropic = 0xd5
+  
+  toEnum 0 = D3D11FilterMinMagMipPoint
+  toEnum 0x1 = D3D11FilterMinMagPointMipLinear
+  toEnum 0x4 = D3D11FilterMinPointMagLinearMipPoint
+  toEnum 0x5 = D3D11FilterMinPointMagMipLinear
+  toEnum 0x10 = D3D11FilterMinLinearMagMipPoint
+  toEnum 0x11 = D3D11FilterMinLinearMagPointMipLinear
+  toEnum 0x14 = D3D11FilterMinMagLinearMipPoint
+  toEnum 0x15 = D3D11FilterMinMagMipLinear
+  toEnum 0x55 = D3D11FilterAnisotropic
+  toEnum 0x80 = D3D11FilterComparisonMinMagMipPoint
+  toEnum 0x81 = D3D11FilterComparisonMinMagPointMipLinear
+  toEnum 0x84 = D3D11FilterComparisonMinPointMagLinearMipPoint
+  toEnum 0x85 = D3D11FilterComparisonMinPointMagMipLinear
+  toEnum 0x90 = D3D11FilterComparisonMinLinearMagMipPoint
+  toEnum 0x91 = D3D11FilterComparisonMinLinearMagPointMipLinear
+  toEnum 0x94 = D3D11FilterComparisonMinMagLinearMipPoint
+  toEnum 0x95 = D3D11FilterComparisonMinMagMipLinear
+  toEnum 0xd5 = D3D11FilterComparisonAnisotropic
+  toEnum unmatched =  error ("D3D11Filter.toEnum: cannot match " ++ show unmatched)
+
+instance Storable D3D11Filter where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
+  
+instance CStorable D3D11Filter where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
+
+data D3D11TextureAddressMode = D3D11TextureAddressWrap
+                             | D3D11TextureAddressMirror
+                             | D3D11TextureAddressClamp
+                             | D3D11TextureAddressBorder
+                             | D3D11TextureAddressMirrorOnce
+                             deriving (Eq, Show)
+
+instance Enum D3D11TextureAddressMode where
+  fromEnum D3D11TextureAddressWrap = 1
+  fromEnum D3D11TextureAddressMirror = 2
+  fromEnum D3D11TextureAddressClamp = 3
+  fromEnum D3D11TextureAddressBorder = 4
+  fromEnum D3D11TextureAddressMirrorOnce = 5
+  toEnum 1 = D3D11TextureAddressWrap
+  toEnum 2 = D3D11TextureAddressMirror
+  toEnum 3 = D3D11TextureAddressClamp
+  toEnum 4 = D3D11TextureAddressBorder
+  toEnum 5 = D3D11TextureAddressMirrorOnce
+  toEnum unmatched =  error ("D3D11TextureAddressMode.toEnum: cannot match " ++ show unmatched)
+  
+instance Storable D3D11TextureAddressMode where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
+  
+instance CStorable D3D11TextureAddressMode where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke
+  
+data D3D11ComparisonFunc = D3D11ComparisonNever
+                         | D3D11ComparisonLess
+                         | D3D11ComparisonEqual
+                         | D3D11ComparisonLessEqual
+                         | D3D11ComparisonGreater
+                         | D3D11ComparisonNotEqual
+                         | D3D11ComparisonGreaterEqual
+                         | D3D11ComparisonAlways
+                         deriving (Eq, Show)
+                         
+instance Enum D3D11ComparisonFunc where
+  fromEnum D3D11ComparisonNever = 1
+  fromEnum D3D11ComparisonLess = 2
+  fromEnum D3D11ComparisonEqual = 3
+  fromEnum D3D11ComparisonLessEqual = 4
+  fromEnum D3D11ComparisonGreater = 5
+  fromEnum D3D11ComparisonNotEqual = 6
+  fromEnum D3D11ComparisonGreaterEqual = 7
+  fromEnum D3D11ComparisonAlways = 8
+  
+  toEnum 0 = D3D11ComparisonNever
+  toEnum 1 = D3D11ComparisonLess
+  toEnum 2 = D3D11ComparisonEqual
+  toEnum 3 = D3D11ComparisonLessEqual
+  toEnum 4 = D3D11ComparisonGreater
+  toEnum 5 = D3D11ComparisonNotEqual
+  toEnum 6 = D3D11ComparisonGreaterEqual
+  toEnum 7 = D3D11ComparisonAlways
+  toEnum unmatched =  error ("D3D11ComparisonFunc.toEnum: cannot match " ++ show unmatched)
+                         
+instance Storable D3D11ComparisonFunc where
+  sizeOf e = sizeOf ((fromIntegral $ fromEnum e) :: Int32)
+  alignment e = alignment ((fromIntegral $ fromEnum e) :: Int32)
+  peek ptr = peekByteOff (castPtr ptr :: Ptr Int32) 0 >>= (return . toEnum)
+  poke ptr val = pokeByteOff (castPtr ptr :: Ptr Int32) 0 (fromEnum val)
+  
+instance CStorable D3D11ComparisonFunc where
+  cSizeOf = sizeOf
+  cAlignment = alignment
+  cPeek = peek
+  cPoke = poke

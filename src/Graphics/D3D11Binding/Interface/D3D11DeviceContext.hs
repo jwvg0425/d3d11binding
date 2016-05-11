@@ -20,6 +20,8 @@ import Graphics.D3D11Binding.Interface.D3D11RenderTargetView
 import Graphics.D3D11Binding.Interface.D3D11DepthStencilView
 import Graphics.D3D11Binding.Interface.D3D11InputLayout
 import Graphics.D3D11Binding.Interface.D3D11ClassInstance
+import Graphics.D3D11Binding.Interface.D3D11ShaderResourceView
+import Graphics.D3D11Binding.Interface.D3D11SamplerState
 
 import Graphics.D3D11Binding.Shader.D3D11VertexShader
 import Graphics.D3D11Binding.Shader.D3D11PixelShader
@@ -68,6 +70,12 @@ foreign import stdcall "PSSetConstantBuffers" c_psSetConstantBuffers
 
 foreign import stdcall "DrawIndexed" c_drawIndexed
   :: Ptr ID3D11DeviceContext -> Word32 -> Word32 -> Word32 -> IO ()
+  
+foreign import stdcall "PSSetShaderResources" c_psSetShaderResources
+  :: Ptr ID3D11DeviceContext -> Word32 -> Word32 -> Ptr (Ptr ID3D11ShaderResourceView) -> IO ()
+
+foreign import stdcall "PSSetSamplers" c_psSetSamplers
+  :: Ptr ID3D11DeviceContext -> Word32 -> Word32 -> Ptr (Ptr ID3D11SamplerState) -> IO ()
 
 class (UnknownInterface interface) => D3D11DeviceContextInterface interface where
   omSetRenderTargets :: Ptr interface -> [Ptr ID3D11RenderTargetView] -> Ptr ID3D11DepthStencilView -> IO ()
@@ -135,6 +143,16 @@ class (UnknownInterface interface) => D3D11DeviceContextInterface interface wher
   psSetShader ptr pixelShader classInstances = maybePokeArray classInstances $ \pClassInstances -> do
     let classInstanceNum = fromIntegral $ length classInstances
     c_psSetShader (castPtr ptr) pixelShader pClassInstances classInstanceNum
+  
+  psSetShaderResources :: Ptr interface -> Word32 -> [Ptr ID3D11ShaderResourceView] -> IO ()
+  psSetShaderResources ptr startSlot resources = alloca $ \pResources -> do
+    pokeArray pResources resources
+    c_psSetShaderResources (castPtr ptr) startSlot (fromIntegral $ length resources) pResources
+    
+  psSetSamplers :: Ptr interface -> Word32 -> [Ptr ID3D11SamplerState] -> IO ()
+  psSetSamplers ptr startSlot samplers = alloca $ \pSamplers -> do
+    pokeArray pSamplers samplers
+    c_psSetSamplers (castPtr ptr) startSlot (fromIntegral $ length samplers) pSamplers
   
   draw :: Ptr interface -> Word32 -> Word32 -> IO ()
   draw ptr vertexCount startVertexLocation = c_draw (castPtr ptr) vertexCount startVertexLocation

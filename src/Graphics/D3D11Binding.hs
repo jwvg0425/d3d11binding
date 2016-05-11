@@ -7,6 +7,7 @@ module Graphics.D3D11Binding
 , module Graphics.D3D11Binding.Utils
 , module Graphics.D3D11Binding.Math
 , d3d11CreateDeviceAndSwapChain
+, createDDSTextureFromFile
 ) where
 
 import Data.Word
@@ -82,5 +83,7 @@ createDDSTextureFromFile :: Ptr ID3D11Device -> String -> IO (Either HRESULT (Pt
 createDDSTextureFromFile device fileName = 
   alloca $ \pResource -> withCWString fileName $ \wFileName ->  do
     hr <- c_createDDSTextureFromFile device wFileName nullPtr pResource 0 nullPtr
-    if hr < 0 then return (Left hr)
+    if hr < 0 then do 
+      print hr 
+      return (Left hr)
     else Right <$> peek pResource

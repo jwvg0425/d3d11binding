@@ -1016,7 +1016,6 @@ static HRESULT CreateD3DResources( ID3D11Device* d3dDevice,
                                                  initData,
                                                  &tex
                                                );
-                printf("%d\n",hr);
                                                
                 if (SUCCEEDED( hr ) && tex != 0)
                 {

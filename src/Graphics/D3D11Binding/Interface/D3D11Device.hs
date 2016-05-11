@@ -19,6 +19,7 @@ import Graphics.D3D11Binding.Interface.D3D11RenderTargetView
 import Graphics.D3D11Binding.Interface.D3D11ClassLinkage
 import Graphics.D3D11Binding.Interface.D3D11InputLayout
 import Graphics.D3D11Binding.Interface.D3D11Texture2D
+import Graphics.D3D11Binding.Interface.D3D11SamplerState
 
 import Graphics.D3D11Binding.Shader.D3D11VertexShader
 import Graphics.D3D11Binding.Shader.D3D11PixelShader
@@ -43,6 +44,9 @@ foreign import stdcall "CreateTexture2D" c_createTexture2D
 
 foreign import stdcall "CreateDepthStencilView" c_createDepthStencilView
   :: Ptr ID3D11Device -> Ptr ID3D11Resource -> Ptr D3D11DepthStencilViewDesc -> Ptr (Ptr ID3D11DepthStencilView) -> IO HRESULT
+
+foreign import stdcall "CreateSamplerState" c_createSamplerState
+  :: Ptr ID3D11Device -> Ptr D3D11SamplerDesc -> Ptr (Ptr ID3D11SamplerState) -> IO HRESULT
 
 class (UnknownInterface interface) => D3D11DeviceInterface interface where
   createRenderTargetView
@@ -101,7 +105,8 @@ class (UnknownInterface interface) => D3D11DeviceInterface interface where
         if hr < 0 then return (Left hr) else Right <$> peek ppBuffer
 
   createTexture2D
-    :: (HasSubresourceData resource) => Ptr interface -> D3D11Texture2DDesc -> [resource] -> IO (Either HRESULT (Ptr ID3D11Texture2D))
+    :: (HasSubresourceData resource) => Ptr interface -> D3D11Texture2DDesc -> [resource] ->
+       IO (Either HRESULT (Ptr ID3D11Texture2D))
   createTexture2D this desc resource =
     alloca $ \ppTexture2D -> alloca $ \pDesc -> do
       poke pDesc desc
@@ -114,6 +119,14 @@ class (UnknownInterface interface) => D3D11DeviceInterface interface where
         poke pResource resource'
         hr <- c_createTexture2D (castPtr this) pDesc pResource ppTexture2D
         if hr < 0 then return (Left hr) else Right <$> peek ppTexture2D
+  
+  createSamplerState
+    :: Ptr interface -> D3D11SamplerDesc -> IO (Either HRESULT (Ptr ID3D11SamplerState))
+  createSamplerState this desc =
+    alloca $ \pDesc -> alloca $ \ppState -> do
+      poke pDesc desc
+      hr <- c_createSamplerState (castPtr this) pDesc ppState
+      if hr < 0 then return (Left hr) else Right <$> peek ppState
       
 data ID3D11Device = ID3D11Device
 

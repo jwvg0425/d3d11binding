@@ -237,3 +237,29 @@ void ClearDepthStencilView(
 {
   return This->lpVtbl->ClearDepthStencilView(This, pDepthStencilView, ClearFlags, Depth, Stencil);
 }
+
+HRESULT CreateSamplerState(
+  ID3D11Device* This,
+  const D3D11_SAMPLER_DESC *pSamplerDesc,
+  ID3D11SamplerState **ppSamplerState)
+{
+  return This->lpVtbl->CreateSamplerState(This, pSamplerDesc, ppSamplerState);
+}
+
+void PSSetShaderResources(
+  ID3D11DeviceContext* This,
+  UINT StartSlot,
+  UINT NumViews,
+  ID3D11ShaderResourceView *const *ppShaderResourceViews)
+{
+  This->lpVtbl->PSSetShaderResources(This, StartSlot, NumViews, ppShaderResourceViews);
+}
+
+void STDMETHODCALLTYPE PSSetSamplers( 
+  ID3D11DeviceContext* This,
+  UINT StartSlot,
+  UINT NumSamplers,
+  ID3D11SamplerState *const *ppSamplers)
+{
+  This->lpVtbl->PSSetSamplers(This, StartSlot, NumSamplers, ppSamplers);
+}

@@ -323,3 +323,26 @@ tex2dMsDsv = Dsv (fromIntegral 0) (fromIntegral 0) (fromIntegral 0)
 
 tex2dMsArrayDsv :: Word32 -> Word32 -> Dsv
 tex2dMsArrayDsv firstArraySlice arraySize = Dsv firstArraySlice arraySize (fromIntegral 0)
+
+data D3D11SamplerDesc = D3D11SamplerDesc
+  { samplerFilter :: D3D11Filter
+  , samplerAddressU :: D3D11TextureAddressMode
+  , samplerAddressV :: D3D11TextureAddressMode
+  , samplerAddressW :: D3D11TextureAddressMode
+  , samplerMipLODBias :: Float
+  , samplerMaxAnisotropy :: Word32
+  , samplerComparisonFunc :: D3D11ComparisonFunc
+  , samplerBorderColor :: Color
+  , samplerMinLOD :: Float
+  , samplerMaxLOD :: Float
+  } deriving (Generic)
+  
+instance CStorable D3D11SamplerDesc
+instance Storable D3D11SamplerDesc where
+  sizeOf = cSizeOf
+  alignment = cAlignment
+  poke = cPoke
+  peek = cPeek
+  
+d3d11Float32Max :: Float
+d3d11Float32Max = 3402823466e+38
